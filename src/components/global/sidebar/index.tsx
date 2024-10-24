@@ -30,6 +30,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import { useDispatch } from "react-redux";
 import GlobalCard from "../global-card";
+import PaymentButton from "../payment-button";
+import InfoBar from "../info-bar";
 
 type Props = {
   activeWorkspaceId: string;
@@ -194,14 +196,14 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
         <GlobalCard
           title="Upgrade to Pro"
           description=" Unlock AI features like transcription, AI summary, and more."
-          footer="hh"
+          footer={<PaymentButton />}
         />
       )}
     </div>
   );
   return (
     <div className="full">
-      {/* <InfoBar /> */}
+      <InfoBar />
       <div className="md:hidden fixed my-4">
         <Sheet>
           <SheetTrigger asChild className="ml-2">
