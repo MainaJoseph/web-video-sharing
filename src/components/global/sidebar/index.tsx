@@ -49,8 +49,42 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
         </SelectTrigger>
         <SelectContent className="bg-[#111111] backdrop-blur-xl">
           <SelectGroup>
-            <SelectLabel>Workspaces</SelectLabel>
+            <SelectLabel className="font-bold text-md">Workspaces</SelectLabel>
             <Separator />
+            <SelectLabel className="font-normal text-sm">
+              {" "}
+              Private workspace
+            </SelectLabel>
+
+            <Separator />
+            {workspace.workspace.map((workspace) => (
+              <SelectItem
+                value={workspace.id}
+                key={workspace.id}
+                className="cursor-pointer"
+              >
+                {workspace.name}
+              </SelectItem>
+            ))}
+            <Separator className="mt-3" />
+            <SelectLabel className="font-normal text-sm mt-1">
+              {" "}
+              Other workspace
+            </SelectLabel>
+            <Separator />
+            {workspace.members.length > 0 &&
+              workspace.members.map(
+                (workspace) =>
+                  workspace.WorkSpace && (
+                    <SelectItem
+                      className="cursor-pointer"
+                      value={workspace.WorkSpace.id}
+                      key={workspace.WorkSpace.id}
+                    >
+                      {workspace.WorkSpace.name}
+                    </SelectItem>
+                  )
+              )}
           </SelectGroup>
         </SelectContent>
       </Select>
