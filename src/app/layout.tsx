@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Manrope } from "next/font/google";
+import localFont from "next/font/local";
+import { Manrope, DM_Sans } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme";
+import ReactQueryProvider from "@/react-query";
 
 import { Toaster } from "sonner";
-import { ThemeProvider } from "@/components/theme";
 
-const manrope = Manrope({ subsets: ["latin"] });
+const manrope = DM_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nova",
+  title: "Opal",
   description: "Share AI powered videos with your friends.",
 };
 
@@ -28,8 +30,10 @@ export default function RootLayout({
             defaultTheme="dark"
             disableTransitionOnChange
           >
-            {children}
-            <Toaster />
+            <ReactQueryProvider>
+              {children}
+              <Toaster />
+            </ReactQueryProvider>
           </ThemeProvider>
         </body>
       </html>
