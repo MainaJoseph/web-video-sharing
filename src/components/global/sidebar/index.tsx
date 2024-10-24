@@ -19,6 +19,8 @@ import { WorkspaceProps } from "@/types/index.type";
 import Modal from "../modal";
 import { PlusCircle } from "lucide-react";
 import Search from "../search";
+import { MENU_ITEMS } from "@/constants";
+import SidebarItem from "./sidebar-item";
 
 type Props = {
   activeWorkspaceId: string;
@@ -32,6 +34,8 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
   };
 
   const { data, isFetched } = useQueryData(["user-workspaces"], getWorkSpaces);
+
+  const menuItems = MENU_ITEMS(activeWorkspaceId);
 
   const { data: workspace } = data as WorkspaceProps;
 
@@ -117,7 +121,7 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
         )}
       <p className="w-full text-[#9D9D9D] font-bold mt-4">Menu</p>
       <nav className="w-full">
-        {/* <ul>
+        <ul>
           {menuItems.map((item) => (
             <SidebarItem
               href={item.href}
@@ -133,7 +137,7 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
               }
             />
           ))}
-        </ul> */}
+        </ul>
       </nav>
     </div>
   );
