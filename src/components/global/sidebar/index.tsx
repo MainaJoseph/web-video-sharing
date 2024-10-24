@@ -1,7 +1,5 @@
 "use client";
-
-import Image from "next/image";
-import React from "react";
+import { getWorkSpaces } from "@/actions/workspace";
 import {
   Select,
   SelectContent,
@@ -11,18 +9,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { usePathname, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { useQueryData } from "@/hooks/useQueryData";
-import { getWorkSpaces } from "@/actions/workspace";
+
 import { NotificationProps, WorkspaceProps } from "@/types/index.type";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import React from "react";
 import Modal from "../modal";
-import { PlusCircle } from "lucide-react";
+import { Menu, PlusCircle } from "lucide-react";
 import Search from "../search";
 import { MENU_ITEMS } from "@/constants";
 import SidebarItem from "./sidebar-item";
 import { getNotifications } from "@/actions/user";
+import { useQueryData } from "@/hooks/useQueryData";
 import WorkspacePlaceholder from "./workspace-placeholder";
+
+import { Button } from "@/components/ui/button";
+import Loader from "../loader";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+import { useDispatch } from "react-redux";
+import GlobalCard from "../global-card";
 
 type Props = {
   activeWorkspaceId: string;
@@ -31,13 +38,9 @@ type Props = {
 const Sidebar = ({ activeWorkspaceId }: Props) => {
   const router = useRouter();
   const pathName = usePathname();
-
-  const onChangeActiveWorkspace = (value: string) => {
-    router.push(`/dashboard/${value}`);
-  };
+  // const dispatch = useDispatch();
 
   const { data, isFetched } = useQueryData(["user-workspaces"], getWorkSpaces);
-
   const menuItems = MENU_ITEMS(activeWorkspaceId);
 
   const { data: notifications } = useQueryData(
@@ -48,56 +51,44 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
   const { data: workspace } = data as WorkspaceProps;
   const { data: count } = notifications as NotificationProps;
 
+  const onChangeActiveWorkspace = (value: string) => {
+    router.push(`/dashboard/${value}`);
+  };
   const currentWorkspace = workspace.workspace.find(
     (s) => s.id === activeWorkspaceId
   );
 
-  return (
+  // if (isFetched && workspace) {
+  //   dispatch(WORKSPACES({ workspaces: workspace.workspace }));
+  // }
+
+  const SidebarSection = (
     <div className="bg-[#111111] flex-none relative p-4 h-full w-[250px] flex flex-col gap-4 items-center overflow-hidden">
       <div className="bg-[#111111] p-4 flex gap-2 justify-center items-center mb-4 absolute top-0 left-0 right-0 ">
         <Image src="/nova-logo.svg" height={40} width={40} alt="logo" />
-        <p className="text-2xl">Nova</p>
+        <p className="text-2xl">Opal</p>
       </div>
       <Select
         defaultValue={activeWorkspaceId}
         onValueChange={onChangeActiveWorkspace}
       >
         <SelectTrigger className="mt-16 text-neutral-400 bg-transparent">
-          <SelectValue placeholder="Select a workspace">
-            Select a workspace
-          </SelectValue>
+          <SelectValue placeholder="Select a workspace"></SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-[#111111] backdrop-blur-xl">
           <SelectGroup>
-            <SelectLabel className="font-bold text-md">Workspaces</SelectLabel>
-            <Separator />
-            <SelectLabel className="font-normal text-sm">
-              {" "}
-              Private workspace
-            </SelectLabel>
-
+            <SelectLabel>Workspaces</SelectLabel>
             <Separator />
             {workspace.workspace.map((workspace) => (
-              <SelectItem
-                value={workspace.id}
-                key={workspace.id}
-                className="cursor-pointer"
-              >
+              <SelectItem value={workspace.id} key={workspace.id}>
                 {workspace.name}
               </SelectItem>
             ))}
-            <Separator className="mt-3" />
-            <SelectLabel className="font-normal text-sm mt-1">
-              {" "}
-              Other workspace
-            </SelectLabel>
-            <Separator />
             {workspace.members.length > 0 &&
               workspace.members.map(
                 (workspace) =>
                   workspace.WorkSpace && (
                     <SelectItem
-                      className="cursor-pointer"
                       value={workspace.WorkSpace.id}
                       key={workspace.WorkSpace.id}
                     >
@@ -160,6 +151,7 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
           </p>
         </div>
       )}
+
       <nav className="w-full">
         <ul className="h-[150px] overflow-auto overflow-x-hidden fade-layer">
           {workspace.workspace.length > 0 &&
@@ -197,6 +189,32 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
             ))}
         </ul>
       </nav>
+      <Separator className="w-4/5" />
+      {workspace.subscription?.plan === "FREE" && (
+        <GlobalCard
+          title="Upgrade to Pro"
+          description=" Unlock AI features like transcription, AI summary, and more."
+          footer="hh"
+        />
+      )}
+    </div>
+  );
+  return (
+    <div className="full">
+      {/* <InfoBar /> */}
+      <div className="md:hidden fixed my-4">
+        <Sheet>
+          <SheetTrigger asChild className="ml-2">
+            <Button variant={"ghost"} className="mt-[2px]">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side={"left"} className="p-0 w-fit h-full">
+            {SidebarSection}
+          </SheetContent>
+        </Sheet>
+      </div>
+      <div className="md:block hidden h-full">{SidebarSection}</div>
     </div>
   );
 };
