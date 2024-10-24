@@ -107,3 +107,47 @@ export const getNotifications = async () => {
     return { status: 400, data: [] };
   }
 };
+
+/**
+ * Server action that searches for users based on a query string.
+ * Searches through first name, last name, and email fields.
+ * Excludes current user from results and includes subscription details.
+ * Returns 200 & users if found, 404 if no user/matches exist, or 500 if query fails.
+ */
+export const searchUsers = async (query: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+
+    const users = await client.user.findMany({
+      where: {
+        OR: [
+          { firstname: { contains: query } },
+          { email: { contains: query } },
+          { lastname: { contains: query } },
+        ],
+        NOT: [{ clerkid: user.id }],
+      },
+      select: {
+        id: true,
+        subscription: {
+          select: {
+            plan: true,
+          },
+        },
+        firstname: true,
+        lastname: true,
+        image: true,
+        email: true,
+      },
+    });
+
+    if (users && users.length > 0) {
+      return { status: 200, data: users };
+    }
+
+    return { status: 404, data: undefined };
+  } catch (error) {
+    return { status: 500, data: undefined };
+  }
+};
