@@ -1,7 +1,17 @@
 import React from "react";
 import { redirect } from "next/navigation";
-import { onAuthenticateUser } from "@/actions/user";
-import { verifyAccessToWorkspace } from "@/actions/workspace";
+import { getNotifications, onAuthenticateUser } from "@/actions/user";
+import {
+  getAllUserVideos,
+  getWorkspaceFolders,
+  getWorkSpaces,
+  verifyAccessToWorkspace,
+} from "@/actions/workspace";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
 
 type Props = {
   params: { workspaceId: string };
@@ -20,7 +30,33 @@ const Layout = async ({ params: { workspaceId }, children }: Props) => {
 
   if (!hasAccess.data?.workspace) return null;
 
-  return <div>{children}</div>;
+  const query = new QueryClient();
+
+  await query.prefetchQuery({
+    queryKey: ["workspace-folders"],
+    queryFn: () => getWorkspaceFolders(workspaceId),
+  });
+
+  await query.prefetchQuery({
+    queryKey: ["user-videos"],
+    queryFn: () => getAllUserVideos(workspaceId),
+  });
+
+  await query.prefetchQuery({
+    queryKey: ["user-workspaces"],
+    queryFn: () => getWorkSpaces(),
+  });
+
+  await query.prefetchQuery({
+    queryKey: ["user-notifications"],
+    queryFn: () => getNotifications(),
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(query)}>
+      <div className="flex h-screen w-screen">Layout</div>
+    </HydrationBoundary>
+  );
 };
 
 export default Layout;
