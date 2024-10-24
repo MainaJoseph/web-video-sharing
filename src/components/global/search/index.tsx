@@ -1,8 +1,10 @@
 import React from "react";
 
-type Props = {};
+type Props = {
+  workspaceId: string;
+};
 
-const Search = (props: Props) => {
+const Search = ({ workspaceId }: Props) => {
   return <div>Search</div>;
 };
 
