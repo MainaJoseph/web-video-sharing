@@ -12,6 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { usePathname, useRouter } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
+import { useQueryData } from "@/hooks/useQueryData";
+import { getWorkSpaces } from "@/actions/workspace";
+import { WorkspaceProps } from "@/types/index.type";
 
 type Props = {
   activeWorkspaceId: string;
@@ -23,6 +27,10 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
   const onChangeActiveWorkspace = (value: string) => {
     router.push(`/dashboard/${value}`);
   };
+
+  const { data, isFetched } = useQueryData(["user-workspaces"], getWorkSpaces);
+
+  const { data: workspace } = data as WorkspaceProps;
 
   return (
     <div className="bg-[#111111] flex-none relative p-4 h-full w-[250px] flex flex-col gap-4 items-center overflow-hidden">
@@ -42,6 +50,7 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
         <SelectContent className="bg-[#111111] backdrop-blur-xl">
           <SelectGroup>
             <SelectLabel>Workspaces</SelectLabel>
+            <Separator />
           </SelectGroup>
         </SelectContent>
       </Select>
