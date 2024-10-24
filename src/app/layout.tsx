@@ -12,7 +12,7 @@ import { Toaster } from "sonner";
 const manrope = DM_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Opal",
+  title: "Nova",
   description: "Share AI powered videos with your friends.",
 };
 
