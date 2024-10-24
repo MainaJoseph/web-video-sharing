@@ -1,31 +1,26 @@
+import React from "react";
+import { redirect } from "next/navigation";
 import { onAuthenticateUser } from "@/actions/user";
 import { verifyAccessToWorkspace } from "@/actions/workspace";
-import { redirect } from "next/navigation";
-import React from "react";
 
-interface LayoutProps {
-  children: React.ReactNode;
-  params: {
-    workspaceId: string;
-  };
-}
-
-// Mark the component as an async Server Component
-async function Layout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
+type Props = {
   params: { workspaceId: string };
-}) {
+  children: React.ReactNode;
+};
+
+const Layout = async ({ params: { workspaceId }, children }: Props) => {
   const auth = await onAuthenticateUser();
   if (!auth.user?.workspace) redirect("/auth/sign-in");
   if (!auth.user.workspace.length) redirect("/auth/sign-in");
+  const hasAccess = await verifyAccessToWorkspace(workspaceId);
 
-  //check if user has rights to see this workspace
-  const hasAccess = await verifyAccessToWorkspace(params.workspaceId);
+  if (hasAccess.status !== 200) {
+    redirect(`/dashboard/${auth.user?.workspace[0].id}`);
+  }
+
+  if (!hasAccess.data?.workspace) return null;
 
   return <div>{children}</div>;
-}
+};
 
 export default Layout;
