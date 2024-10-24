@@ -57,6 +57,7 @@ model Subscription {
   customerId String?           @unique
 }
 
+
 model Media {
   id     String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   screen String?
