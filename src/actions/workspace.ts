@@ -376,3 +376,118 @@ export const getFolderInfo = async (folderId: string) => {
     };
   }
 };
+
+/**
+ * Updates the title and description of a specified video
+ *
+ * This function:
+ * 1. Attempts to update video metadata in the database
+ * 2. Validates the video exists
+ * 3. Returns appropriate success/error status
+ *
+ * @param videoId - The unique identifier of the video to update
+ * @param title - The new title for the video
+ * @param description - The new description for the video
+ *
+ * @returns
+ * - {status: 200, data: "Video successfully updated"} on successful update
+ * - {status: 404, data: "Video not found"} if video doesn't exist
+ * - {status: 400} on validation or database error
+ *
+ * @example
+ * ```typescript
+ * const result = await editVideoInfo(
+ *   "video123",
+ *   "My Updated Video Title",
+ *   "New description for my video"
+ * );
+ *
+ * if (result.status === 200) {
+ *   console.log("Video updated successfully");
+ * }
+ * ```
+ *
+ * @throws Returns error status if database operation fails
+ */
+export const editVideoInfo = async (
+  videoId: string,
+  title: string,
+  description: string
+) => {
+  try {
+    const video = await client.video.update({
+      where: { id: videoId },
+      data: {
+        title,
+        description,
+      },
+    });
+    if (video) return { status: 200, data: "Video successfully updated" };
+    return { status: 404, data: "Video not found" };
+  } catch (error) {
+    return { status: 400 };
+  }
+};
+
+/**
+ * Moves a video to a different workspace and/or folder
+ *
+ * This function:
+ * 1. Updates a video's location by changing its workspace and folder assignments
+ * 2. Handles cases where the folder is optional (null folderId moves to workspace root)
+ * 3. Validates the operation success
+ *
+ * @param videoId - The unique identifier of the video to move
+ * @param workSpaceId - The destination workspace ID
+ * @param folderId - The destination folder ID (optional - null moves to workspace root)
+ *
+ * @returns
+ * - {status: 200, data: 'folder changed successfully'} on successful move
+ * - {status: 404, data: 'workspace/folder not found'} if destination not found
+ * - {status: 500, data: 'Oops! something went wrong'} on server error
+ *
+ * @example
+ * ```typescript
+ * // Move video to a specific folder in a workspace
+ * const result = await moveVideoLocation(
+ *   "video123",
+ *   "workspace456",
+ *   "folder789"
+ * );
+ *
+ * // Move video to workspace root (no folder)
+ * const result = await moveVideoLocation(
+ *   "video123",
+ *   "workspace456",
+ *   null
+ * );
+ *
+ * if (result.status === 200) {
+ *   console.log("Video moved successfully");
+ * }
+ * ```
+ *
+ * @throws Returns error status object if database operation fails
+ */
+
+export const moveVideoLocation = async (
+  videoId: string,
+  workSpaceId: string,
+  folderId: string
+) => {
+  try {
+    const location = await client.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        folderId: folderId || null,
+        workSpaceId,
+      },
+    });
+    if (location) return { status: 200, data: "folder changed successfully" };
+    return { status: 404, data: "workspace/folder not found" };
+  } catch (error) {
+    return { status: 500, data: "Oops! something went wrong" };
+  }
+};
