@@ -6,6 +6,7 @@ import Modal from "../modal";
 import { Button } from "@/components/ui/button";
 import { useQueryData } from "@/hooks/useQueryData";
 import FolderPlusDuotine from "@/components/icons/folder-plus-duotone";
+import WorkspaceForm from "@/components/forms/workspace-form";
 // import WorkspaceForm from "@/components/forms/workspace-form";
 
 type Props = {};
@@ -38,7 +39,7 @@ const CreateWorkspace = (props: Props) => {
         </Button>
       }
     >
-      {/* <WorkspaceForm /> */} foem
+      <WorkspaceForm />
     </Modal>
   );
 };

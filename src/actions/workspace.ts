@@ -171,3 +171,62 @@ export const getWorkSpaces = async () => {
     return { status: 400 };
   }
 };
+
+/**
+ * Creates a new workspace for a PRO user
+ *
+ * This function performs the following steps:
+ * 1. Verifies if the user is authenticated
+ * 2. Checks if the user has a PRO subscription
+ * 3. Creates a new public workspace if authorized
+ *
+ * @param name - The name of the workspace to be created
+ * @returns
+ * - {status: 201, data: 'Workspace Created'} if successful
+ * - {status: 404} if user not found
+ * - {status: 401, data: 'You are not authorized...'} if not on PRO plan
+ * - {status: 400} if there's an error during creation
+ */
+export const createWorkspace = async (name: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const authorized = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        subscription: {
+          select: {
+            plan: true,
+          },
+        },
+      },
+    });
+
+    if (authorized?.subscription?.plan === "PRO") {
+      const workspace = await client.user.update({
+        where: {
+          clerkid: user.id,
+        },
+        data: {
+          workspace: {
+            create: {
+              name,
+              type: "PUBLIC",
+            },
+          },
+        },
+      });
+      if (workspace) {
+        return { status: 201, data: "Workspace Created" };
+      }
+    }
+    return {
+      status: 401,
+      data: "You are not authorized to create a workspace.",
+    };
+  } catch (error) {
+    return { status: 400 };
+  }
+};
