@@ -1,6 +1,7 @@
 import CreateForlders from "@/components/global/create-folders";
 import CreateWorkspace from "@/components/global/create-workspace";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Folders from "@/components/global/folders";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React from "react";
 
 type Props = {
@@ -32,6 +33,11 @@ const Page = async ({ params: { workspaceId } }: Props) => {
             <CreateForlders workspaceId={workspaceId} />
           </div>
         </div>
+        <section className="py-9">
+          <TabsContent value="videos">
+            <Folders workspaceId={workspaceId} />
+          </TabsContent>
+        </section>
       </Tabs>
     </div>
   );

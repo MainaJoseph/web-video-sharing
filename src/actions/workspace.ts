@@ -272,3 +272,46 @@ export const createFolder = async (workspaceId: string) => {
     return { status: 500, message: "Oppse something went wrong" };
   }
 };
+
+/**
+ * Renames a folder based on the provided folder ID and new name
+ *
+ * This function:
+ * 1. Attempts to update the folder name in the database
+ * 2. Returns success/error status with appropriate messages
+ * 3. Handles cases where folder doesn't exist or update fails
+ *
+ * @param folderId - The unique identifier of the folder to rename
+ * @param name - The new name for the folder
+ *
+ * @returns
+ * - {status: 200, data: 'Folder Renamed'} on successful rename
+ * - {status: 400, data: 'Folder does not exist'} if folder not found
+ * - {status: 500, data: 'Opps! something went wrong'} on server error
+ *
+ * @example
+ * ```typescript
+ * const result = await renameFolders("folder123", "New Project");
+ * if (result.status === 200) {
+ *   console.log("Folder renamed successfully");
+ * }
+ * ```
+ */
+export const renameFolders = async (folderId: string, name: string) => {
+  try {
+    const folder = await client.folder.update({
+      where: {
+        id: folderId,
+      },
+      data: {
+        name,
+      },
+    });
+    if (folder) {
+      return { status: 200, data: "Folder Renamed" };
+    }
+    return { status: 400, data: "Folder does not exist" };
+  } catch (error) {
+    return { status: 500, data: "Opps! something went wrong" };
+  }
+};
