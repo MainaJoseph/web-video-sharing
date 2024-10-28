@@ -1,13 +1,14 @@
-'use client'
-import FolderPlusDuotine from '@/components/icons/folder-plus-duotone'
-import { Button } from '@/components/ui/button'
-import { useCreateFolders } from '@/hooks/useCreateFolders'
-import React from 'react'
+"use client";
+import FolderPlusDuotine from "@/components/icons/folder-plus-duotone";
+import { Button } from "@/components/ui/button";
+import { useCreateFolders } from "@/hooks/useCreateFolders";
 
-type Props = { workspaceId: string }
+import React from "react";
+
+type Props = { workspaceId: string };
 
 const CreateForlders = ({ workspaceId }: Props) => {
-  const { onCreateNewFolder } = useCreateFolders(workspaceId)
+  const { onCreateNewFolder } = useCreateFolders(workspaceId);
   return (
     <Button
       onClick={onCreateNewFolder}
@@ -16,7 +17,7 @@ const CreateForlders = ({ workspaceId }: Props) => {
       <FolderPlusDuotine />
       Create A folder
     </Button>
-  )
-}
+  );
+};
 
-export default CreateForlders
+export default CreateForlders;

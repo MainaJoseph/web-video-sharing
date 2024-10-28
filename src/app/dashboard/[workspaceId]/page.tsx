@@ -1,3 +1,4 @@
+import CreateForlders from "@/components/global/create-folders";
 import CreateWorkspace from "@/components/global/create-workspace";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React from "react";
@@ -28,6 +29,7 @@ const Page = async ({ params: { workspaceId } }: Props) => {
           </TabsList>
           <div className="flex gap-x-3">
             <CreateWorkspace />
+            <CreateForlders workspaceId={workspaceId} />
           </div>
         </div>
       </Tabs>
