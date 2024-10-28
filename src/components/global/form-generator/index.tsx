@@ -1,3 +1,43 @@
+/**
+ * A flexible form field generator component that renders different types of form inputs
+ * based on the specified configuration. Integrates with React Hook Form for validation
+ * and error handling.
+ *
+ * Features:
+ * - Supports input, select, and textarea fields
+ * - Integrated error messaging
+ * - Consistent styling and layout
+ * - Label support
+ * - React Hook Form integration
+ *
+ * @example
+ * ```tsx
+ * // Input field
+ * <FormGenerator
+ *   inputType="input"
+ *   type="email"
+ *   label="Email Address"
+ *   placeholder="Enter your email"
+ *   register={register}
+ *   name="email"
+ *   errors={errors}
+ * />
+ *
+ * // Select field
+ * <FormGenerator
+ *   inputType="select"
+ *   label="Country"
+ *   options={[
+ *     { id: "1", value: "us", label: "United States" },
+ *     { id: "2", value: "uk", label: "United Kingdom" }
+ *   ]}
+ *   register={register}
+ *   name="country"
+ *   errors={errors}
+ * />
+ * ```
+ */
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import React from "react";
