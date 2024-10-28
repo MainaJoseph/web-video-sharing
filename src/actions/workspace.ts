@@ -230,3 +230,45 @@ export const createWorkspace = async (name: string) => {
     return { status: 400 };
   }
 };
+
+/**
+ * Creates a new folder with default name "Untitled" in a specified workspace
+ *
+ * This function:
+ * 1. Updates a workspace by creating a new folder
+ * 2. Uses a default name of "Untitled" for the new folder
+ * 3. Returns success/error status with appropriate messages
+ *
+ * @param workspaceId - The ID of the workspace where the folder will be created
+ *
+ * @returns
+ * - {status: 200, message: "New Folder Created"} on successful creation
+ * - {status: 500, message: "Oppse something went wrong"} if creation fails
+ *
+ * @example
+ * ```typescript
+ * const result = await createFolder("workspace123");
+ * if (result.status === 200) {
+ *   console.log("Folder created successfully");
+ * }
+ * ```
+ */
+export const createFolder = async (workspaceId: string) => {
+  try {
+    const isNewFolder = await client.workSpace.update({
+      where: {
+        id: workspaceId,
+      },
+      data: {
+        folders: {
+          create: { name: "Untitled" },
+        },
+      },
+    });
+    if (isNewFolder) {
+      return { status: 200, message: "New Folder Created" };
+    }
+  } catch (error) {
+    return { status: 500, message: "Oppse something went wrong" };
+  }
+};
