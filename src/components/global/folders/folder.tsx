@@ -1,67 +1,66 @@
-'use client'
-import { cn } from '@/lib/utils'
-import { usePathname, useRouter } from 'next/navigation'
-import React, { useRef, useState } from 'react'
-import Loader from '../loader'
-import FolderDuotone from '@/components/icons/folder-duotone'
-import { useMutationData, useMutationDataState } from '@/hooks/useMutationData'
-import { renameFolders } from '@/actions/workspace'
-import { Input } from '@/components/ui/input'
+"use client";
+import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useRef, useState } from "react";
+import Loader from "../loader";
+import FolderDuotone from "@/components/icons/folder-duotone";
+import { useMutationData, useMutationDataState } from "@/hooks/useMutationData";
+import { renameFolders } from "@/actions/workspace";
+import { Input } from "@/components/ui/input";
 
 type Props = {
-  name: string
-  id: string
-  optimistic?: boolean
-  count?: number
-}
+  name: string;
+  id: string;
+  optimistic?: boolean;
+  count?: number;
+};
 
 const Folder = ({ id, name, optimistic, count }: Props) => {
-  const inputRef = useRef<HTMLInputElement | null>(null)
-  const folderCardRef = useRef<HTMLDivElement | null>(null)
-  const pathName = usePathname()
-  const router = useRouter()
-  const [onRename, setOnRename] = useState(false)
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const folderCardRef = useRef<HTMLDivElement | null>(null);
+  const pathName = usePathname();
+  const router = useRouter();
+  const [onRename, setOnRename] = useState(false);
 
-  const Rename = () => setOnRename(true)
-  const Renamed = () => setOnRename(false)
-
+  const Rename = () => setOnRename(true);
+  const Renamed = () => setOnRename(false);
 
   //optimistic
   const { mutate, isPending } = useMutationData(
-    ['rename-folders'],
+    ["rename-folders"],
     (data: { name: string }) => renameFolders(id, data.name),
-    'workspace-folders',
+    "workspace-folders",
     Renamed
-  )
+  );
 
-  const { latestVariables } = useMutationDataState(['rename-folders'])
+  const { latestVariables } = useMutationDataState(["rename-folders"]);
 
   const handleFolderClick = () => {
-    if (onRename) return
-    router.push(`${pathName}/folder/${id}`)
-  }
+    if (onRename) return;
+    router.push(`${pathName}/folder/${id}`);
+  };
 
   const handleNameDoubleClick = (e: React.MouseEvent<HTMLParagraphElement>) => {
-    e.stopPropagation()
-    Rename()
+    e.stopPropagation();
+    Rename();
     //Rename functionality
-  }
+  };
 
   const updateFolderName = (e: React.FocusEvent<HTMLInputElement>) => {
     if (inputRef.current) {
       if (inputRef.current.value) {
-        mutate({ name: inputRef.current.value, id })
-      } else Renamed()
+        mutate({ name: inputRef.current.value, id });
+      } else Renamed();
     }
-  }
+  };
 
   return (
     <div
       onClick={handleFolderClick}
       ref={folderCardRef}
       className={cn(
-        optimistic && 'opacity-60',
-        'flex hover:bg-neutral-800 cursor-pointer transition duration-150 items-center gap-2 justify-between min-w-[250px] py-4 px-4 rounded-lg  border-[1px]'
+        optimistic && "opacity-60",
+        "flex hover:bg-neutral-800 cursor-pointer transition duration-150 items-center gap-2 justify-between min-w-[250px] py-4 px-4 rounded-lg  border-[1px]"
       )}
     >
       <Loader state={isPending}>
@@ -69,7 +68,7 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
           {onRename ? (
             <Input
               onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-                updateFolderName(e)
+                updateFolderName(e);
               }}
               autoFocus
               placeholder={name}
@@ -83,7 +82,7 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
               onDoubleClick={handleNameDoubleClick}
             >
               {latestVariables &&
-              latestVariables.status === 'pending' &&
+              latestVariables.status === "pending" &&
               latestVariables.variables.id === id
                 ? latestVariables.variables.name
                 : name}
@@ -94,7 +93,7 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
       </Loader>
       <FolderDuotone />
     </div>
-  )
-}
+  );
+};
 
-export default Folder
+export default Folder;
