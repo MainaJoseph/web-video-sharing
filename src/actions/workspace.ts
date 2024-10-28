@@ -315,3 +315,64 @@ export const renameFolders = async (folderId: string, name: string) => {
     return { status: 500, data: "Opps! something went wrong" };
   }
 };
+
+/**
+ * Retrieves folder information including name and video count
+ *
+ * This function:
+ * 1. Queries the database for a specific folder
+ * 2. Returns the folder name and count of associated videos
+ * 3. Handles cases where folder doesn't exist
+ *
+ * @param folderId - The unique identifier of the folder to retrieve
+ *
+ * @returns
+ * - {status: 200, data: {name: string, _count: {videos: number}}} on success
+ * - {status: 400, data: null} if folder not found
+ * - {status: 500, data: null} on server error
+ *
+ * @example
+ * ```typescript
+ * const result = await getFolderInfo("folder123");
+ * if (result.status === 200) {
+ *   console.log(`Folder ${result.data.name} has ${result.data._count.videos} videos`);
+ * }
+ * ```
+ *
+ * @typedef {Object} FolderInfo
+ * @property {string} name - The name of the folder
+ * @property {Object} _count - Count information
+ * @property {number} _count.videos - Number of videos in the folder
+ */
+
+export const getFolderInfo = async (folderId: string) => {
+  try {
+    const folder = await client.folder.findUnique({
+      where: {
+        id: folderId,
+      },
+      select: {
+        name: true,
+        _count: {
+          select: {
+            videos: true,
+          },
+        },
+      },
+    });
+    if (folder)
+      return {
+        status: 200,
+        data: folder,
+      };
+    return {
+      status: 400,
+      data: null,
+    };
+  } catch (error) {
+    return {
+      status: 500,
+      data: null,
+    };
+  }
+};
