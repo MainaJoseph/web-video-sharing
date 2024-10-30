@@ -32,6 +32,7 @@ import { useDispatch } from "react-redux";
 import GlobalCard from "../global-card";
 import PaymentButton from "../payment-button";
 import InfoBar from "../info-bar";
+import { WORKSPACES } from "@/redux/slices/workspaces";
 
 type Props = {
   activeWorkspaceId: string;
@@ -40,7 +41,7 @@ type Props = {
 const Sidebar = ({ activeWorkspaceId }: Props) => {
   const router = useRouter();
   const pathName = usePathname();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const { data, isFetched } = useQueryData(["user-workspaces"], getWorkSpaces);
   const menuItems = MENU_ITEMS(activeWorkspaceId);
@@ -60,9 +61,9 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
     (s) => s.id === activeWorkspaceId
   );
 
-  // if (isFetched && workspace) {
-  //   dispatch(WORKSPACES({ workspaces: workspace.workspace }));
-  // }
+  if (isFetched && workspace) {
+    dispatch(WORKSPACES({ workspaces: workspace.workspace }));
+  }
 
   const SidebarSection = (
     <div className="bg-[#111111] flex-none relative p-4 h-full w-[250px] flex flex-col gap-4 items-center overflow-hidden">
