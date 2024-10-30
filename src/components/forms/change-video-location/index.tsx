@@ -1,11 +1,4 @@
 import React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -54,18 +47,23 @@ const ChangeVideoLocation = ({
 
         <div className="space-y-2">
           <Label>Workspace</Label>
-          <Select {...register("workspace_id")}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select workspace" />
-            </SelectTrigger>
-            <SelectContent>
-              {workspaces.map((space) => (
-                <SelectItem key={space.id} value={space.id}>
-                  {space.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <select
+            {...register("workspace_id")}
+            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+          >
+            <option value="" className="text-muted-foreground">
+              Select workspace
+            </option>
+            {workspaces.map((space) => (
+              <option
+                key={space.id}
+                value={space.id}
+                className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+              >
+                {space.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         {isFetching ? (
@@ -74,18 +72,23 @@ const ChangeVideoLocation = ({
           <div className="space-y-2">
             <Label>Folders in this workspace</Label>
             {isFolders && isFolders.length > 0 ? (
-              <Select {...register("folder_id")}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select folder" />
-                </SelectTrigger>
-                <SelectContent>
-                  {isFolders.map((folder) => (
-                    <SelectItem key={folder.id} value={folder.id}>
-                      {folder.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <select
+                {...register("folder_id")}
+                className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1"
+              >
+                <option value="" className="text-muted-foreground">
+                  Select folder
+                </option>
+                {isFolders.map((folder) => (
+                  <option
+                    key={folder.id}
+                    value={folder.id}
+                    className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                  >
+                    {folder.name}
+                  </option>
+                ))}
+              </select>
             ) : (
               <p className="text-sm text-muted-foreground">
                 This workspace has no folders
