@@ -8,21 +8,15 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  CreditCard,
-  Calendar,
-  Receipt,
-  CheckCircle2,
-  XCircle,
-  Plus,
-} from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { CreditCard, Receipt, CheckCircle2, XCircle, Plus } from "lucide-react";
+import AddCardDialog from "./add-card-dialogue";
+import PaymentMethodSection from "./payment-method-card";
 
 const BillingPage = async () => {
   const response = await getBillingDetails();
-
   const data = response.status === 200 ? response.data : null;
   const isPro = data?.subscription?.plan === "PRO";
 
@@ -90,54 +84,10 @@ const BillingPage = async () => {
                     Manage your payment methods
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-white border-zinc-700 hover:bg-zinc-800"
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Card
-                </Button>
+                <AddCardDialog />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {/* Example saved card */}
-                <div className="p-4 rounded-lg border border-zinc-800 hover:bg-zinc-800/50 transition-colors group">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <CreditCard className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">
-                          •••• •••• •••• 4242
-                        </p>
-                        <p className="text-sm text-zinc-400">Expires 12/24</p>
-                      </div>
-                    </div>
-                    <Badge
-                      variant="secondary"
-                      className="bg-zinc-800 text-zinc-400"
-                    >
-                      Default
-                    </Badge>
-                  </div>
-                </div>
-
-                {/* Add new card placeholder */}
-                <div className="p-4 rounded-lg border border-dashed border-zinc-800 hover:bg-zinc-800/50 transition-colors cursor-pointer group">
-                  <div className="flex flex-col items-center justify-center py-4">
-                    <div className="h-10 w-10 rounded-full bg-zinc-800/50 flex items-center justify-center group-hover:bg-zinc-700/50">
-                      <Plus className="h-5 w-5 text-zinc-400" />
-                    </div>
-                    <p className="mt-2 text-sm font-medium text-zinc-400">
-                      Add a new payment method
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
+            <PaymentMethodSection />
           </Card>
         </div>
 
