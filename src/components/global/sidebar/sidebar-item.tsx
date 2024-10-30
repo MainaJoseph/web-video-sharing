@@ -16,22 +16,48 @@ const SidebarItem = ({ href, icon, selected, title, notifications }: Props) => {
       <Link
         href={href}
         className={cn(
-          "flex items-center justify-between group rounded-lg hover:bg-[#1D1D1D]",
-          selected ? "bg-[#1D1D1D]" : ""
+          "flex items-center justify-between group rounded-lg",
+          "transition-colors duration-200",
+          "hover:bg-zinc-100 dark:hover:bg-zinc-800/80",
+          selected ? "bg-zinc-100 dark:bg-zinc-800/80" : "bg-transparent"
         )}
       >
-        <div className="flex items-center gap-2 transition-all p-[5px] cursor-pointer">
-          {icon}
+        <div className="flex items-center gap-2 p-[5px] cursor-pointer">
           <span
             className={cn(
-              "font-medium group-hover:text-[#9D9D9D] transition-all truncate w-32",
-              selected ? "text-[#9D9D9D]" : "text-[#545454]"
+              "transition-colors duration-200",
+              selected
+                ? "text-zinc-900 dark:text-zinc-300"
+                : "text-zinc-500 dark:text-zinc-600"
+            )}
+          >
+            {icon}
+          </span>
+          <span
+            className={cn(
+              "font-medium truncate w-32 transition-colors duration-200",
+              "group-hover:text-zinc-900 dark:group-hover:text-zinc-300",
+              selected
+                ? "text-zinc-900 dark:text-zinc-300"
+                : "text-zinc-500 dark:text-zinc-600"
             )}
           >
             {title}
           </span>
         </div>
-        {}
+        {notifications && notifications > 0 && (
+          <div className="mr-2">
+            <span
+              className={cn(
+                "bg-primary/10 text-primary",
+                "px-2 py-0.5 rounded-full text-xs font-medium",
+                "transition-colors duration-200"
+              )}
+            >
+              {notifications}
+            </span>
+          </div>
+        )}
       </Link>
     </li>
   );
