@@ -316,3 +316,37 @@ export const createCommentAndReply = async (
     return { status: 400 };
   }
 };
+
+
+/**
+* Retrieves user's subscription plan information from the database.
+* Requires authenticated user.
+* Only returns the subscription plan details if available.
+* 
+* Returns:
+* - {status: 404} if no authenticated user
+* - {status: 200, data: {subscription}} if user and plan found
+* - {status: 400} if query fails
+*/
+export const getPaymentInfo = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+
+    const payment = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        subscription: {
+          select: { plan: true },
+        },
+      },
+    });
+    if (payment) {
+      return { status: 200, data: payment };
+    }
+  } catch (error) {
+    return { status: 400 };
+  }
+};
