@@ -1,13 +1,11 @@
 "use client";
 import { getWorkSpaces } from "@/actions/workspace";
-
 import React from "react";
 import Modal from "../modal";
 import { Button } from "@/components/ui/button";
 import { useQueryData } from "@/hooks/useQueryData";
 import FolderPlusDuotine from "@/components/icons/folder-plus-duotone";
 import WorkspaceForm from "@/components/forms/workspace-form";
-// import WorkspaceForm from "@/components/forms/workspace-form";
 
 type Props = {};
 
@@ -31,11 +29,26 @@ const CreateWorkspace = (props: Props) => {
     return (
       <Modal
         title="Create a Workspace"
-        description=" Workspaces helps you collaborate with team members. You are assigned a default personal workspace where you can share videos in private with yourself."
+        description="Workspaces helps you collaborate with team members. You are assigned a default personal workspace where you can share videos in private with yourself."
         trigger={
-          <Button className="bg-[#1D1D1D] text-[#707070] flex items-center gap-2 py-6 px-4 rounded-2xl">
-            <FolderPlusDuotine />
-            Create Workspace
+          <Button
+            className="bg-white dark:bg-zinc-900 
+              hover:bg-zinc-50 dark:hover:bg-zinc-800/80
+              text-zinc-600 dark:text-zinc-400 
+              hover:text-zinc-700 dark:hover:text-zinc-300
+              border border-zinc-200 dark:border-zinc-800
+              flex items-center gap-2 py-6 px-4 rounded-2xl
+              transition-all duration-200 group
+              shadow-sm hover:shadow-md dark:shadow-none"
+          >
+            <span
+              className="text-zinc-400 dark:text-zinc-600 
+              group-hover:text-zinc-500 dark:group-hover:text-zinc-400
+              transition-colors duration-200"
+            >
+              <FolderPlusDuotine />
+            </span>
+            <span className="font-medium">Create Workspace</span>
           </Button>
         }
       >
