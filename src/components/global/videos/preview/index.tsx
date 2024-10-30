@@ -8,13 +8,12 @@ import CopyLink from "../copy-link";
 import RichLink from "../rich-link";
 import { truncateString } from "@/lib/utils";
 import { Download } from "lucide-react";
-import TabMenu from '../../tabs'
-// import AiTools from '../../ai-tools'
-// import VideoTranscript from '../../video-transcript'
+import TabMenu from "../../tabs";
+// import AiTools from "../../ai-tools";
+// import VideoTranscript from "../../video-transcript";
 import { TabsContent } from "@/components/ui/tabs";
-// import Activities from '../../activities'
-import EditVideo from "../edit";
 import Activities from "../../activities";
+import EditVideo from "../edit";
 
 type Props = {
   videoId: string;
@@ -27,7 +26,7 @@ const VideoPreview = ({ videoId }: Props) => {
     getPreviewVideo(videoId)
   );
 
-  // const notifyFirstView = async () => await sendEmailForFirstView(videoId)
+  // const notifyFirstView = async () => await sendEmailForFirstView(videoId);
 
   const { data: video, status, author } = data as VideoProps;
   if (status !== 200) router.push("/");
@@ -38,12 +37,12 @@ const VideoPreview = ({ videoId }: Props) => {
 
   // useEffect(() => {
   //   if (video.views === 0) {
-  //     notifyFirstView()
+  //     notifyFirstView();
   //   }
   //   return () => {
-  //     notifyFirstView()
-  //   }
-  // }, [])
+  //     notifyFirstView();
+  //   };
+  // }, []);
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 lg:py-10 overflow-y-auto gap-5">
@@ -115,7 +114,7 @@ const VideoPreview = ({ videoId }: Props) => {
         <div>
           <TabMenu
             defaultValue="Ai tools"
-            triggers={['Ai tools', 'Transcript', 'Activity']}
+            triggers={["Ai tools", "Transcript", "Activity"]}
           >
             {/* <AiTools
               videoId={videoId}
@@ -135,3 +134,6 @@ const VideoPreview = ({ videoId }: Props) => {
 };
 
 export default VideoPreview;
+
+
+
