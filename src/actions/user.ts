@@ -212,3 +212,107 @@ export const getVideoComments = async (Id: string) => {
     return { status: 400 };
   }
 };
+
+
+
+
+/**
+* Configures and returns email transport and options using nodemailer.
+* Uses Gmail SMTP with secure connection (port 465).
+* Requires MAILER_EMAIL and MAILER_PASSWORD env variables.
+* 
+* @param to - Recipient email address
+* @param subject - Email subject line
+* @param text - Plain text email body
+* @param html - Optional HTML email body
+* @returns {transporter, mailOptions} Email transport and configuration
+*/
+
+
+// export const sendEmail = async (
+//   to: string,
+//   subject: string,
+//   text: string,
+//   html?: string
+// ) => {
+//   const transporter = nodemailer.createTransport({
+//     host: "smtp.gmail.com",
+//     port: 465,
+//     secure: true,
+//     auth: {
+//       user: process.env.MAILER_EMAIL,
+//       pass: process.env.MAILER_PASSWORD,
+//     },
+//   });
+
+//   const mailOptions = {
+//     to,
+//     subject,
+//     text,
+//     html,
+//   };
+//   return { transporter, mailOptions };
+// };
+
+
+
+
+
+/**
+* Creates either a new comment on a video or a reply to an existing comment.
+* If commentId provided, adds reply to existing comment.
+* If no commentId, creates new root-level comment on video.
+* 
+* @param userId - ID of user creating comment/reply
+* @param comment - Comment text content
+* @param videoId - ID of video being commented on
+* @param commentId - Optional ID of parent comment for replies
+* Returns:
+* - {status: 200, data: string} Success message
+* - {status: 400} If operation fails
+*/
+export const createCommentAndReply = async (
+  userId: string,
+  comment: string,
+  videoId: string,
+  commentId?: string | undefined
+) => {
+  try {
+    if (commentId) {
+      const reply = await client.comment.update({
+        where: {
+          id: commentId,
+        },
+        data: {
+          reply: {
+            create: {
+              comment,
+              userId,
+              videoId,
+            },
+          },
+        },
+      });
+      if (reply) {
+        return { status: 200, data: "Reply posted" };
+      }
+    }
+
+    const newComment = await client.video.update({
+      where: {
+        id: videoId,
+      },
+      data: {
+        Comment: {
+          create: {
+            comment,
+            userId,
+          },
+        },
+      },
+    });
+    if (newComment) return { status: 200, data: "New comment added" };
+  } catch (error) {
+    return { status: 400 };
+  }
+};

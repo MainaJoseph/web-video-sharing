@@ -1,48 +1,49 @@
-'use client'
-import { getPreviewVideo, sendEmailForFirstView } from '@/actions/workspace'
-import { useQueryData } from '@/hooks/useQueryData'
-import { VideoProps } from '@/types/index.type'
-import { useRouter } from 'next/navigation'
-import React, { useEffect } from 'react'
-import CopyLink from '../copy-link'
-import RichLink from '../rich-link'
-import { truncateString } from '@/lib/utils'
-import { Download } from 'lucide-react'
+"use client";
+import { getPreviewVideo } from "@/actions/workspace";
+import { useQueryData } from "@/hooks/useQueryData";
+import { VideoProps } from "@/types/index.type";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import CopyLink from "../copy-link";
+import RichLink from "../rich-link";
+import { truncateString } from "@/lib/utils";
+import { Download } from "lucide-react";
 import TabMenu from '../../tabs'
-import AiTools from '../../ai-tools'
-import VideoTranscript from '../../video-transcript'
-import { TabsContent } from '@/components/ui/tabs'
-import Activities from '../../activities'
-import EditVideo from '../edit'
+// import AiTools from '../../ai-tools'
+// import VideoTranscript from '../../video-transcript'
+import { TabsContent } from "@/components/ui/tabs";
+// import Activities from '../../activities'
+import EditVideo from "../edit";
+import Activities from "../../activities";
 
 type Props = {
-  videoId: string
-}
+  videoId: string;
+};
 
 const VideoPreview = ({ videoId }: Props) => {
-  const router = useRouter()
+  const router = useRouter();
 
-  const { data } = useQueryData(['preview-video'], () =>
+  const { data } = useQueryData(["preview-video"], () =>
     getPreviewVideo(videoId)
-  )
+  );
 
-  const notifyFirstView = async () => await sendEmailForFirstView(videoId)
+  // const notifyFirstView = async () => await sendEmailForFirstView(videoId)
 
-  const { data: video, status, author } = data as VideoProps
-  if (status !== 200) router.push('/')
+  const { data: video, status, author } = data as VideoProps;
+  if (status !== 200) router.push("/");
 
   const daysAgo = Math.floor(
     (new Date().getTime() - video.createdAt.getTime()) / (24 * 60 * 60 * 1000)
-  )
+  );
 
-  useEffect(() => {
-    if (video.views === 0) {
-      notifyFirstView()
-    }
-    return () => {
-      notifyFirstView()
-    }
-  }, [])
+  // useEffect(() => {
+  //   if (video.views === 0) {
+  //     notifyFirstView()
+  //   }
+  //   return () => {
+  //     notifyFirstView()
+  //   }
+  // }, [])
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 lg:py-10 overflow-y-auto gap-5">
@@ -65,7 +66,7 @@ const VideoPreview = ({ videoId }: Props) => {
               {video.User?.firstname} {video.User?.lastname}
             </p>
             <p className="text-[#707070]">
-              {daysAgo === 0 ? 'Today' : `${daysAgo}d ago`}
+              {daysAgo === 0 ? "Today" : `${daysAgo}d ago`}
             </p>
           </span>
         </div>
@@ -116,12 +117,12 @@ const VideoPreview = ({ videoId }: Props) => {
             defaultValue="Ai tools"
             triggers={['Ai tools', 'Transcript', 'Activity']}
           >
-            <AiTools
+            {/* <AiTools
               videoId={videoId}
               trial={video.User?.trial!}
               plan={video.User?.subscription?.plan!}
             />
-            <VideoTranscript transcript={video.summery!} />
+            <VideoTranscript transcript={video.summery!} /> */}
             <Activities
               author={video.User?.firstname as string}
               videoId={videoId}
@@ -130,7 +131,7 @@ const VideoPreview = ({ videoId }: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default VideoPreview
+export default VideoPreview;
