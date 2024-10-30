@@ -1,14 +1,14 @@
 "use client";
+
 import { getNotifications } from "@/actions/user";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQueryData } from "@/hooks/useQueryData";
-import { QueryClient } from "@tanstack/react-query";
-import { User } from "lucide-react";
-import React from "react";
+import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Bell, User, XCircle } from "lucide-react";
+import { format } from "date-fns";
 
-type Props = {};
-
-const Notifications = (props: Props) => {
+const Notifications = () => {
   const { data: notifications } = useQueryData(
     ["user-notifications"],
     getNotifications
@@ -21,34 +21,68 @@ const Notifications = (props: Props) => {
         id: string;
         userId: string | null;
         content: string;
+        createdAt: Date;
       }[];
     };
   };
 
   if (status !== 200) {
     return (
-      <div className="flex justify-center items-center h-full w-full">
-        <p>No Notification</p>
+      <div className="flex flex-col items-center justify-center h-[300px] text-zinc-400">
+        <XCircle className="h-8 w-8 mb-2 opacity-50" />
+        <p className="text-center">No notifications yet</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col">
-      {notification.notification.map((n) => (
-        <div
-          key={n.id}
-          className="border-2 flex gap-x-3 items-center rounded-lg p-3"
-        >
-          <Avatar>
-            <AvatarFallback>
-              <User />
-            </AvatarFallback>
-          </Avatar>
-          <p>{n.content}</p>
+    <Card className="bg-gradient-to-br from-zinc-900 to-black border-zinc-800 p-4">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Bell className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold text-white">Notifications</h2>
         </div>
-      ))}
-    </div>
+        <span className="text-xs text-zinc-400">
+          {notification.notification.length} new
+        </span>
+      </div>
+      <ScrollArea className="h-[400px] pr-4">
+        <div className="space-y-3">
+          {notification.notification.map((n) => (
+            <div
+              key={n.id}
+              className="group relative flex gap-x-3 items-start rounded-lg p-4 bg-zinc-800/50 hover:bg-zinc-800/80 transition-colors"
+            >
+              <div className="flex-shrink-0">
+                <Avatar className="h-8 w-8 border border-zinc-700">
+                  <AvatarFallback className="bg-zinc-900">
+                    <User className="h-4 w-4 text-zinc-400" />
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm text-zinc-100 leading-6">{n.content}</p>
+                <p className="text-xs text-zinc-400 mt-1">
+                  {format(new Date(n.createdAt), "MMM d, h:mm a")}
+                </p>
+              </div>
+              <div className="flex-shrink-0 self-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="text-zinc-400 hover:text-zinc-300 p-1 rounded-full hover:bg-zinc-700/50">
+                  <XCircle className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+      {notification.notification.length > 0 && (
+        <div className="mt-4 pt-4 border-t border-zinc-800">
+          <button className="text-sm text-primary hover:text-primary/80 transition-colors w-full text-center">
+            Mark all as read
+          </button>
+        </div>
+      )}
+    </Card>
   );
 };
 
