@@ -9,14 +9,14 @@ type Props = {
 };
 
 const GlobalHeader = ({ workspace }: Props) => {
-  //Pathname
   const pathName = usePathname().split(`/dashboard/${workspace.id}`)[1];
+
   return (
     <article className="flex flex-col gap-2">
-      <span className="text-[#707070] text-xs">
+      <span className="text-zinc-500 dark:text-zinc-400 text-xs">
         {pathName.includes("video") ? "" : workspace.type.toLocaleUpperCase()}
       </span>
-      <h1 className="text-4xl font-bold">
+      <h1 className="text-zinc-800 dark:text-zinc-100 text-4xl font-bold">
         {pathName && !pathName.includes("folder") && !pathName.includes("video")
           ? pathName.charAt(1).toUpperCase() + pathName.slice(2).toLowerCase()
           : pathName.includes("video")
