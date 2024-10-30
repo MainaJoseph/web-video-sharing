@@ -15,7 +15,10 @@ const TabMenu = ({ children, defaultValue, triggers }: Props) => {
           <TabsTrigger
             key={trigger}
             value={trigger}
-            className="capitalize text-base data-[state=active]:bg-[#1D1D1D]"
+            className="capitalize text-base 
+              text-zinc-500 dark:text-zinc-400
+              data-[state=active]:bg-zinc-100 dark:data-[state=active]:bg-zinc-800/80
+              data-[state=active]:text-zinc-900 dark:data-[state=active]:text-zinc-100"
           >
             {trigger}
           </TabsTrigger>
