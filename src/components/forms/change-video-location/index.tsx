@@ -1,17 +1,17 @@
-import Loader from '@/components/global/loader'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useMoveVideos } from '@/hooks/useFolders'
-import React from 'react'
+import Loader from "@/components/global/loader";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useMoveVideos } from "@/hooks/useFolders";
+import React from "react";
 
 type Props = {
-  videoId: string
-  currentFolder?: string
-  currentWorkSpace?: string
-  currentFolderName?: string
-}
+  videoId: string;
+  currentFolder?: string;
+  currentWorkSpace?: string;
+  currentFolderName?: string;
+};
 
 const ChangeVideoLocation = ({
   videoId,
@@ -27,21 +27,18 @@ const ChangeVideoLocation = ({
     workspaces,
     isFetching,
     isFolders,
-  } = useMoveVideos(videoId, currentWorkSpace!)
+  } = useMoveVideos(videoId, currentWorkSpace!);
 
-  const folder = folders.find((f) => f.id === currentFolder)
-  const workspace = workspaces.find((f) => f.id === currentWorkSpace)
+  const folder = folders.find((f) => f.id === currentFolder);
+  const workspace = workspaces.find((f) => f.id === currentWorkSpace);
 
   return (
-    <form
-      className="flex flex-col gap-y-5"
-      onSubmit={onFormSubmit}
-    >
+    <form className="flex flex-col gap-y-5" onSubmit={onFormSubmit}>
       <div className="boder-[1px] rounded-xl p-5">
         <h2 className="text-xs text-[#a4a4a4]">Current Workspace</h2>
         {workspace && <p>{workspace.name}</p>}
         <h2 className="text-xs text-[#a4a4a4] mt-4">Current Folder</h2>
-        {folder ? <p>{folder.name}</p> : 'This video has no folder'}
+        {folder ? <p>{folder.name}</p> : "This video has no folder"}
       </div>
       <Separator orientation="horizontal" />
       <div className="flex flex-col gap-y-5 p-5 border-[1px] rounded-xl">
@@ -50,7 +47,7 @@ const ChangeVideoLocation = ({
           <p className="text-xs">Workspace</p>
           <select
             className="rounded-xl text-base bg-transparent"
-            {...register('workspace_id')}
+            {...register("workspace_id")}
           >
             {workspaces.map((space) => (
               <option
@@ -70,7 +67,7 @@ const ChangeVideoLocation = ({
             <p className="text-xs">Folders in this workspace</p>
             {isFolders && isFolders.length > 0 ? (
               <select
-                {...register('folder_id')}
+                {...register("folder_id")}
                 className="rounded-xl bg-transparent text-base"
               >
                 {isFolders.map((folder, key) =>
@@ -102,15 +99,12 @@ const ChangeVideoLocation = ({
         )}
       </div>
       <Button>
-        <Loader
-          state={isPending}
-          color="#000"
-        >
+        <Loader state={isPending} color="#000">
           Transfer
         </Loader>
       </Button>
     </form>
-  )
-}
+  );
+};
 
-export default ChangeVideoLocation
+export default ChangeVideoLocation;
