@@ -411,3 +411,69 @@ export const getBillingDetails = async () => {
     return { status: 400 };
   }
 };
+
+/**
+ * Retrieves user's firstView setting from database.
+ * FirstView determines if user receives notifications on first video view.
+ * Requires authenticated user.
+ *
+ * Returns:
+ * - {status: 404} if no authenticated user
+ * - {status: 200, data: boolean} if user found, returns firstView setting
+ * - {status: 400, data: false} if user not found or query fails
+ */
+export const getFirstView = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const userData = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        firstView: true,
+      },
+    });
+    if (userData) {
+      return { status: 200, data: userData.firstView };
+    }
+    return { status: 400, data: false };
+  } catch (error) {
+    return { status: 400 };
+  }
+};
+
+
+/**
+* Updates user's firstView notification setting.
+* Toggles whether user receives notifications when their video gets first view.
+* Requires authenticated user.
+* 
+* @param state - Boolean to enable/disable firstView notifications
+* Returns:
+* - {status: 404} if no authenticated user
+* - {status: 200, data: string} if setting updated successfully
+* - {status: 400} if update fails
+*/
+export const enableFirstView = async (state: boolean) => {
+  try {
+    const user = await currentUser();
+
+    if (!user) return { status: 404 };
+
+    const view = await client.user.update({
+      where: {
+        clerkid: user.id,
+      },
+      data: {
+        firstView: state,
+      },
+    });
+
+    if (view) {
+      return { status: 200, data: "Setting updated" };
+    }
+  } catch (error) {
+    return { status: 400 };
+  }
+};
