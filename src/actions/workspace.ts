@@ -491,3 +491,61 @@ export const moveVideoLocation = async (
     return { status: 500, data: "Oops! something went wrong" };
   }
 };
+
+
+
+
+/**
+* Gets preview details for a video, including user info and ownership status.
+* Requires authenticated user. Returns video title, metadata, stats, and creator details.
+* Also determines if requesting user is the video author.
+* Returns:
+* - {status: 404} if no user found or video not found
+* - {status: 200, data: video, author: boolean} if successful
+* - {status: 400} if query fails
+*/
+export const getPreviewVideo = async (videoId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const video = await client.video.findUnique({
+      where: {
+        id: videoId,
+      },
+      select: {
+        title: true,
+        createdAt: true,
+        source: true,
+        description: true,
+        processing: true,
+        views: true,
+        summery: true,
+        User: {
+          select: {
+            firstname: true,
+            lastname: true,
+            image: true,
+            clerkid: true,
+            trial: true,
+            subscription: {
+              select: {
+                plan: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    if (video) {
+      return {
+        status: 200,
+        data: video,
+        author: user.id === video.User?.clerkid ? true : false,
+      };
+    }
+
+    return { status: 404 };
+  } catch (error) {
+    return { status: 400 };
+  }
+};

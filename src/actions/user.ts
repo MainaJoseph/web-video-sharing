@@ -151,3 +151,64 @@ export const searchUsers = async (query: string) => {
     return { status: 500, data: undefined };
   }
 };
+
+/**
+ * Retrieves a user's profile ID and image from the database using their Clerk ID.
+ * Uses the currentUser() helper to get the authenticated user, then queries the database.
+ * Returns:
+ * - {status: 404} if no authenticated user found
+ * - {status: 200, data: {id, image}} if profile exists
+ * - {status: 400} if error occurs during lookup
+ */
+
+export const getUserProfile = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const profileIdAndImage = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        image: true,
+        id: true,
+      },
+    });
+
+    if (profileIdAndImage) return { status: 200, data: profileIdAndImage };
+  } catch (error) {
+    return { status: 400 };
+  }
+};
+
+/**
+ * Fetches comments for a video or comment thread, including nested replies.
+ * Looks for comments where either videoId or commentId matches the input Id,
+ * but only root-level comments (commentId is null).
+ * Includes the user data for both comments and replies.
+ * Returns:
+ * - {status: 200, data: comments[]} if successful
+ * - {status: 400} if query fails
+ */
+export const getVideoComments = async (Id: string) => {
+  try {
+    const comments = await client.comment.findMany({
+      where: {
+        OR: [{ videoId: Id }, { commentId: Id }],
+        commentId: null,
+      },
+      include: {
+        reply: {
+          include: {
+            User: true,
+          },
+        },
+        User: true,
+      },
+    });
+
+    return { status: 200, data: comments };
+  } catch (error) {
+    return { status: 400 };
+  }
+};
