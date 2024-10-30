@@ -350,3 +350,59 @@ export const getPaymentInfo = async () => {
     return { status: 400 };
   }
 };
+
+
+
+/**
+ * Retrieves user's billing information including subscription and payment history.
+ * Requires authenticated user.
+ * Returns subscription details and last 10 payment transactions.
+ * 
+ * Returns:
+ * - {status: 404} if no authenticated user
+ * - {status: 200, data: {subscription, paymentHistory}} if data found
+ * - {status: 400} if query fails
+ */
+export const getBillingDetails = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+
+    const billingData = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        subscription: {
+          select: {
+            plan: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        paymentHistory: {
+          select: {
+            id: true,
+            amount: true,
+            status: true,
+            description: true,
+            createdAt: true,
+          },
+          orderBy: {
+            createdAt: 'desc'
+          },
+          take: 10
+        },
+      },
+    });
+
+    if (billingData) {
+      return { status: 200, data: billingData };
+    }
+
+    return { status: 404 };
+  } catch (error) {
+    console.log("🔴 ERROR", error);
+    return { status: 400 };
+  }
+};

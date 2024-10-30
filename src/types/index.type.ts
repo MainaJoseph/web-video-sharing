@@ -123,3 +123,20 @@ export type VideoCommentProps = {
     videoId: string | null;
   }[];
 };
+
+
+
+export type BillingData = {
+  subscription: {
+    plan: "PRO" | "FREE";
+    createdAt: Date;
+    updatedAt: Date;
+  } | null;
+  paymentHistory: {
+    id: string;
+    amount: number;
+    status: string;
+    description: string;
+    createdAt: Date;
+  }[];
+};
