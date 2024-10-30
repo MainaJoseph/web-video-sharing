@@ -25,7 +25,7 @@ const Videos = ({ folderId, videosKey, workspaceId }: Props) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <VideoRecorderDuotone />
-          <h2 className="text-[#BdBdBd] text-xl">Videos</h2>
+          <h2 className="text-zinc-700 dark:text-zinc-300 text-xl">Videos</h2>
         </div>
       </div>
       <section
@@ -40,7 +40,9 @@ const Videos = ({ folderId, videosKey, workspaceId }: Props) => {
             <VideoCard key={video.id} workspaceId={workspaceId} {...video} />
           ))
         ) : (
-          <p className="text-[#BDBDBD]"> No videos in workspace</p>
+          <p className="text-zinc-500 dark:text-zinc-400">
+            No videos in workspace
+          </p>
         )}
       </section>
     </div>
