@@ -23,17 +23,20 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={`${manrope.className} bg-[#171717]`}>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${manrope.className} bg-white dark:bg-zinc-950 min-h-screen transition-colors duration-300`}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
+            enableSystem
             disableTransitionOnChange
           >
             <ReduxProvider>
               <ReactQueryProvider>
                 {children}
-                <Toaster />
+                <Toaster theme="system" />
               </ReactQueryProvider>
             </ReduxProvider>
           </ThemeProvider>
