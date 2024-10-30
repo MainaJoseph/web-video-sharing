@@ -25,7 +25,6 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
   const Rename = () => setOnRename(true);
   const Renamed = () => setOnRename(false);
 
-  //optimistic
   const { mutate, isPending } = useMutationData(
     ["rename-folders"],
     (data: { name: string }) => renameFolders(id, data.name),
@@ -43,7 +42,6 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
   const handleNameDoubleClick = (e: React.MouseEvent<HTMLParagraphElement>) => {
     e.stopPropagation();
     Rename();
-    //Rename functionality
   };
 
   const updateFolderName = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -59,27 +57,36 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
       onClick={handleFolderClick}
       ref={folderCardRef}
       className={cn(
-        optimistic && "opacity-60",
-        "flex hover:bg-neutral-800 cursor-pointer transition duration-150 items-center gap-2 justify-between min-w-[250px] py-4 px-4 rounded-lg  border-[1px]"
+        "flex items-center gap-2 justify-between min-w-[250px] py-4 px-4 rounded-lg",
+        "border border-zinc-200 dark:border-zinc-800",
+        "bg-white dark:bg-zinc-950",
+        "hover:bg-zinc-50 dark:hover:bg-zinc-800/80",
+        "transition duration-150 cursor-pointer",
+        "group",
+        optimistic && "opacity-60"
       )}
     >
       <Loader state={isPending}>
         <div className="flex flex-col gap-[1px]">
           {onRename ? (
             <Input
-              onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-                updateFolderName(e);
-              }}
+              onBlur={updateFolderName}
               autoFocus
               placeholder={name}
-              className="border-none text-base w-full outline-none text-neutral-300 bg-transparent p-0"
+              className={cn(
+                "border-none text-base w-full p-0",
+                "bg-transparent",
+                "text-zinc-700 dark:text-zinc-300",
+                "placeholder:text-zinc-400 dark:placeholder:text-zinc-500",
+                "focus-visible:ring-0 focus-visible:ring-offset-0"
+              )}
               ref={inputRef}
             />
           ) : (
             <p
               onClick={(e) => e.stopPropagation()}
-              className="text-neutral-300"
               onDoubleClick={handleNameDoubleClick}
+              className="text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-zinc-100"
             >
               {latestVariables &&
               latestVariables.status === "pending" &&
@@ -88,10 +95,14 @@ const Folder = ({ id, name, optimistic, count }: Props) => {
                 : name}
             </p>
           )}
-          <span className="text-sm text-neutral-500">{count || 0} videos</span>
+          <span className="text-sm text-zinc-500 dark:text-zinc-500">
+            {count || 0} videos
+          </span>
         </div>
       </Loader>
-      <FolderDuotone />
+      <div className="text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400">
+        <FolderDuotone />
+      </div>
     </div>
   );
 };

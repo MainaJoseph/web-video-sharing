@@ -15,7 +15,12 @@ const FolderInfo = ({ folderId }: Props) => {
 
   return (
     <div className="flex items-center">
-      <h2 className="text[#BdBdBd] text-2xl">{folder.name}</h2>
+      <h2
+        className="text-2xl font-semibold text-zinc-800 dark:text-zinc-200 
+        transition-colors"
+      >
+        {folder.name}
+      </h2>
     </div>
   );
 };

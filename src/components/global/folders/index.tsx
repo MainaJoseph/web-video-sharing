@@ -2,7 +2,7 @@
 import FolderDuotone from "@/components/icons/folder-duotone";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Folder from "./folder";
 import { useQueryData } from "@/hooks/useQueryData";
 import { getWorkspaceFolders } from "@/actions/workspace";
@@ -31,7 +31,7 @@ export type FoldersProps = {
 
 const Folders = ({ workspaceId }: Props) => {
   const dispatch = useDispatch();
-  //get folders
+
   const { data, isFetched } = useQueryData(["workspace-folders"], () =>
     getWorkspaceFolders(workspaceId)
   );
@@ -40,33 +40,41 @@ const Folders = ({ workspaceId }: Props) => {
 
   const { status, data: folders } = data as FoldersProps;
 
-  // if (isFetched && folders) {
-  // }
-
   if (isFetched && folders) {
     dispatch(FOLDERS({ folders: folders }));
   }
 
   return (
     <div className="flex flex-col gap-4" suppressHydrationWarning>
-      <div className="flex items-center  justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <FolderDuotone />
-          <h2 className="text-[#BDBDBD] text-xl"> Folders</h2>
+          <div className="text-zinc-400 dark:text-zinc-500">
+            <FolderDuotone />
+          </div>
+          <h2 className="text-xl font-medium text-zinc-700 dark:text-zinc-300">
+            Folders
+          </h2>
         </div>
-        <div className="flex items-center gap-2">
-          <p className="text-[#BDBDBD]">See all</p>
-          <ArrowRight color="#707070" />
+        <div className="flex items-center gap-2 group cursor-pointer">
+          <p className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
+            See all
+          </p>
+          <ArrowRight className="h-4 w-4 text-zinc-400 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transition-colors" />
         </div>
       </div>
+
       <div
         className={cn(
-          status !== 200 && "justify-center",
-          "flex items-center gap-4 overflow-x-auto w-full"
+          "flex items-center gap-4 overflow-x-auto w-full",
+          "scrollbar-thin scrollbar-track-transparent",
+          "scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800",
+          status !== 200 && "justify-center"
         )}
       >
         {status !== 200 ? (
-          <p className="text-neutral-300">No folders in workspace</p>
+          <p className="text-zinc-500 dark:text-zinc-400">
+            No folders in workspace
+          </p>
         ) : (
           <>
             {latestVariables && latestVariables.status === "pending" && (
@@ -87,6 +95,7 @@ const Folders = ({ workspaceId }: Props) => {
           </>
         )}
       </div>
+
       <Videos
         workspaceId={workspaceId}
         folderId={workspaceId}
