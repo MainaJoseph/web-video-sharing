@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 
 const BillingPage = async () => {
   const response = await getBillingDetails();
+
   const data = response.status === 200 ? response.data : null;
   const isPro = data?.subscription?.plan === "PRO";
 

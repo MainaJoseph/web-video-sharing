@@ -124,8 +124,6 @@ export type VideoCommentProps = {
   }[];
 };
 
-
-
 export type BillingData = {
   subscription: {
     plan: "PRO" | "FREE";

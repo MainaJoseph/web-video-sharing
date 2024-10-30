@@ -213,21 +213,17 @@ export const getVideoComments = async (Id: string) => {
   }
 };
 
-
-
-
 /**
-* Configures and returns email transport and options using nodemailer.
-* Uses Gmail SMTP with secure connection (port 465).
-* Requires MAILER_EMAIL and MAILER_PASSWORD env variables.
-* 
-* @param to - Recipient email address
-* @param subject - Email subject line
-* @param text - Plain text email body
-* @param html - Optional HTML email body
-* @returns {transporter, mailOptions} Email transport and configuration
-*/
-
+ * Configures and returns email transport and options using nodemailer.
+ * Uses Gmail SMTP with secure connection (port 465).
+ * Requires MAILER_EMAIL and MAILER_PASSWORD env variables.
+ *
+ * @param to - Recipient email address
+ * @param subject - Email subject line
+ * @param text - Plain text email body
+ * @param html - Optional HTML email body
+ * @returns {transporter, mailOptions} Email transport and configuration
+ */
 
 // export const sendEmail = async (
 //   to: string,
@@ -254,23 +250,19 @@ export const getVideoComments = async (Id: string) => {
 //   return { transporter, mailOptions };
 // };
 
-
-
-
-
 /**
-* Creates either a new comment on a video or a reply to an existing comment.
-* If commentId provided, adds reply to existing comment.
-* If no commentId, creates new root-level comment on video.
-* 
-* @param userId - ID of user creating comment/reply
-* @param comment - Comment text content
-* @param videoId - ID of video being commented on
-* @param commentId - Optional ID of parent comment for replies
-* Returns:
-* - {status: 200, data: string} Success message
-* - {status: 400} If operation fails
-*/
+ * Creates either a new comment on a video or a reply to an existing comment.
+ * If commentId provided, adds reply to existing comment.
+ * If no commentId, creates new root-level comment on video.
+ *
+ * @param userId - ID of user creating comment/reply
+ * @param comment - Comment text content
+ * @param videoId - ID of video being commented on
+ * @param commentId - Optional ID of parent comment for replies
+ * Returns:
+ * - {status: 200, data: string} Success message
+ * - {status: 400} If operation fails
+ */
 export const createCommentAndReply = async (
   userId: string,
   comment: string,
@@ -317,17 +309,16 @@ export const createCommentAndReply = async (
   }
 };
 
-
 /**
-* Retrieves user's subscription plan information from the database.
-* Requires authenticated user.
-* Only returns the subscription plan details if available.
-* 
-* Returns:
-* - {status: 404} if no authenticated user
-* - {status: 200, data: {subscription}} if user and plan found
-* - {status: 400} if query fails
-*/
+ * Retrieves user's subscription plan information from the database.
+ * Requires authenticated user.
+ * Only returns the subscription plan details if available.
+ *
+ * Returns:
+ * - {status: 404} if no authenticated user
+ * - {status: 200, data: {subscription}} if user and plan found
+ * - {status: 400} if query fails
+ */
 export const getPaymentInfo = async () => {
   try {
     const user = await currentUser();
@@ -351,13 +342,11 @@ export const getPaymentInfo = async () => {
   }
 };
 
-
-
 /**
  * Retrieves user's billing information including subscription and payment history.
  * Requires authenticated user.
  * Returns subscription details and last 10 payment transactions.
- * 
+ *
  * Returns:
  * - {status: 404} if no authenticated user
  * - {status: 200, data: {subscription, paymentHistory}} if data found
@@ -368,39 +357,55 @@ export const getBillingDetails = async () => {
     const user = await currentUser();
     if (!user) return { status: 404 };
 
-    const billingData = await client.user.findUnique({
+    // First get the user's ID from the database
+    const dbUser = await client.user.findUnique({
       where: {
         clerkid: user.id,
       },
       select: {
-        subscription: {
-          select: {
-            plan: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        paymentHistory: {
-          select: {
-            id: true,
-            amount: true,
-            status: true,
-            description: true,
-            createdAt: true,
-          },
-          orderBy: {
-            createdAt: 'desc'
-          },
-          take: 10
-        },
+        id: true,
       },
     });
 
-    if (billingData) {
-      return { status: 200, data: billingData };
-    }
+    if (!dbUser) return { status: 404 };
 
-    return { status: 404 };
+    // Now fetch subscription and payment history using the user's ID
+    const [subscription, paymentHistory] = await Promise.all([
+      client.subscription.findUnique({
+        where: {
+          userId: dbUser.id,
+        },
+        select: {
+          plan: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      }),
+      client.paymentHistory.findMany({
+        where: {
+          userId: dbUser.id,
+        },
+        select: {
+          id: true,
+          amount: true,
+          status: true,
+          description: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 10,
+      }),
+    ]);
+
+    return {
+      status: 200,
+      data: {
+        subscription,
+        paymentHistory,
+      },
+    };
   } catch (error) {
     console.log("🔴 ERROR", error);
     return { status: 400 };
