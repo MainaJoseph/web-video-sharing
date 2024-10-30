@@ -27,6 +27,7 @@ model User {
   subscription Subscription?
   members      Member[]
   notification Notification[]
+   paymentHistory PaymentHistory[]
   sender       Invite[]       @relation("sender")
   reciever     Invite[]       @relation("reciever")
   trial        Boolean        @default(false)
@@ -135,6 +136,17 @@ model Invite {
   WorkSpace   WorkSpace? @relation(fields: [workSpaceId], references: [id])
   workSpaceId String?    @db.Uuid
   accepted    Boolean    @default(false)
+}
+
+
+model PaymentHistory {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  amount        Float
+  status        String    @default("successful")
+  description   String
+  createdAt     DateTime  @default(now())
+  User          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String?   @db.Uuid
 }
 
 enum Type {
