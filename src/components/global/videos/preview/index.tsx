@@ -9,8 +9,8 @@ import RichLink from "../rich-link";
 import { truncateString } from "@/lib/utils";
 import { Download } from "lucide-react";
 import TabMenu from "../../tabs";
-// import AiTools from "../../ai-tools";
-// import VideoTranscript from "../../video-transcript";
+import AiTools from "../../ai-tools";
+import VideoTranscript from "../../video-transcript";
 import { TabsContent } from "@/components/ui/tabs";
 import Activities from "../../activities";
 import EditVideo from "../edit";
@@ -116,12 +116,12 @@ const VideoPreview = ({ videoId }: Props) => {
             defaultValue="Ai tools"
             triggers={["Ai tools", "Transcript", "Activity"]}
           >
-            {/* <AiTools
+            <AiTools
               videoId={videoId}
               trial={video.User?.trial!}
               plan={video.User?.subscription?.plan!}
             />
-            <VideoTranscript transcript={video.summery!} /> */}
+            <VideoTranscript transcript={video.summery!} />
             <Activities
               author={video.User?.firstname as string}
               videoId={videoId}
@@ -134,6 +134,3 @@ const VideoPreview = ({ videoId }: Props) => {
 };
 
 export default VideoPreview;
-
-
-
