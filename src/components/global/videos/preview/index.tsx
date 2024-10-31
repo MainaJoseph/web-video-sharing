@@ -49,7 +49,9 @@ const VideoPreview = ({ videoId }: Props) => {
       <div className="flex flex-col lg:col-span-2 gap-y-10">
         <div>
           <div className="flex gap-x-5 items-start justify-between">
-            <h2 className="text-white text-4xl font-bold">{video.title}</h2>
+            <h2 className="text-zinc-700 dark:text-white text-4xl font-bold">
+              {video.title}
+            </h2>
             {author ? (
               <EditVideo
                 videoId={videoId}
@@ -61,10 +63,10 @@ const VideoPreview = ({ videoId }: Props) => {
             )}
           </div>
           <span className="flex gap-x-3 mt-2">
-            <p className="text-[#9D9D9D] capitalize">
+            <p className="text-zinc-500 dark:text-zinc-400 capitalize">
               {video.User?.firstname} {video.User?.lastname}
             </p>
-            <p className="text-[#707070]">
+            <p className="text-zinc-600 dark:text-zinc-500">
               {daysAgo === 0 ? "Today" : `${daysAgo}d ago`}
             </p>
           </span>
@@ -80,7 +82,9 @@ const VideoPreview = ({ videoId }: Props) => {
         </video>
         <div className="flex flex-col text-2xl gap-y-4">
           <div className="flex gap-x-5 items-center justify-between">
-            <p className="text-[#BDBDBD] text-semibold">Description</p>
+            <p className="text-zinc-700 dark:text-zinc-300 text-semibold">
+              Description
+            </p>
             {author ? (
               <EditVideo
                 videoId={videoId}
@@ -91,7 +95,7 @@ const VideoPreview = ({ videoId }: Props) => {
               <></>
             )}
           </div>
-          <p className="text-[#9D9D9D] text-lg text-medium">
+          <p className="text-zinc-600 dark:text-zinc-400 text-lg text-medium">
             {video.description}
           </p>
         </div>
@@ -109,7 +113,7 @@ const VideoPreview = ({ videoId }: Props) => {
             source={video.source}
             title={video.title as string}
           />
-          <Download className="text-[#4d4c4c]" />
+          <Download className="text-zinc-600 dark:text-zinc-500" />
         </div>
         <div>
           <TabMenu
