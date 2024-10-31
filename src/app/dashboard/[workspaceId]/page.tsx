@@ -40,14 +40,22 @@ const Page = async ({ params: { workspaceId } }: Props) => {
           <div className="flex w-full justify-between items-center">
             <TabsList className="bg-transparent gap-2 pl-0">
               <TabsTrigger
-                className="p-[13px] px-6 rounded-full data-[state=active]:bg-[#252525]"
+                className="p-[13px] px-6 rounded-full 
+                  text-zinc-600 dark:text-zinc-400
+                  hover:text-zinc-900 dark:hover:text-zinc-100
+                  data-[state=active]:bg-zinc-100 dark:data-[state=active]:bg-zinc-800
+                  data-[state=active]:text-zinc-900 dark:data-[state=active]:text-zinc-100"
                 value="videos"
               >
                 Videos
               </TabsTrigger>
               <TabsTrigger
                 value="archive"
-                className="p-[13px] px-6 rounded-full data-[state=active]:bg-[#252525]"
+                className="p-[13px] px-6 rounded-full
+                  text-zinc-600 dark:text-zinc-400
+                  hover:text-zinc-900 dark:hover:text-zinc-100
+                  data-[state=active]:bg-zinc-100 dark:data-[state=active]:bg-zinc-800
+                  data-[state=active]:text-zinc-900 dark:data-[state=active]:text-zinc-100"
               >
                 Archive
               </TabsTrigger>
