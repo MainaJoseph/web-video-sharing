@@ -18,8 +18,10 @@ const GlobalCard = ({ title, children, description, footer }: Props) => {
   return (
     <Card className="bg-transparent mt-4">
       <CardHeader className="p-4">
-        <CardTitle className="text-md text-[#9D9D9D]">{title}</CardTitle>
-        <CardDescription className="text-[#707070]">
+        <CardTitle className="text-md text-zinc-600 dark:text-zinc-400">
+          {title}
+        </CardTitle>
+        <CardDescription className="text-zinc-500 dark:text-zinc-500">
           {description}
         </CardDescription>
       </CardHeader>
