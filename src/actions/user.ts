@@ -2,6 +2,11 @@
 
 import { client } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
+
+export async function revalidateVideoPage(videoId: string) {
+  revalidatePath(`/video/${videoId}`);
+}
 
 // Authenticate User with clerk
 export const onAuthenticateUser = async () => {
@@ -197,13 +202,27 @@ export const getVideoComments = async (Id: string) => {
         OR: [{ videoId: Id }, { commentId: Id }],
         commentId: null,
       },
-      include: {
+      select: {
+        id: true,
+        comment: true,
+        createdAt: true,
+        commentId: true,
+        userId: true,
+        videoId: true,
+        isEdited: true,
+        User: true,
         reply: {
-          include: {
+          select: {
+            id: true,
+            comment: true,
+            createdAt: true,
+            commentId: true,
+            userId: true,
+            videoId: true,
+            isEdited: true,
             User: true,
           },
         },
-        User: true,
       },
     });
 
@@ -443,18 +462,17 @@ export const getFirstView = async () => {
   }
 };
 
-
 /**
-* Updates user's firstView notification setting.
-* Toggles whether user receives notifications when their video gets first view.
-* Requires authenticated user.
-* 
-* @param state - Boolean to enable/disable firstView notifications
-* Returns:
-* - {status: 404} if no authenticated user
-* - {status: 200, data: string} if setting updated successfully
-* - {status: 400} if update fails
-*/
+ * Updates user's firstView notification setting.
+ * Toggles whether user receives notifications when their video gets first view.
+ * Requires authenticated user.
+ *
+ * @param state - Boolean to enable/disable firstView notifications
+ * Returns:
+ * - {status: 404} if no authenticated user
+ * - {status: 200, data: string} if setting updated successfully
+ * - {status: 400} if update fails
+ */
 export const enableFirstView = async (state: boolean) => {
   try {
     const user = await currentUser();
@@ -474,6 +492,65 @@ export const enableFirstView = async (state: boolean) => {
       return { status: 200, data: "Setting updated" };
     }
   } catch (error) {
+    return { status: 400 };
+  }
+};
+
+/**
+ * Updates an existing comment with new content.
+ * Marks the comment as edited.
+ *
+ * @param commentId - ID of comment to edit
+ * @param newComment - Updated comment text
+ * Returns:
+ * - {status: 200, data: Comment} if update successful
+ * - {status: 400} if update fails
+ */
+// actions/user.ts
+export const editComment = async (commentId: string, newComment: string) => {
+  try {
+    const updatedComment = await client.comment.update({
+      where: {
+        id: commentId,
+      },
+      data: {
+        comment: newComment,
+        isEdited: true,
+        editedAt: new Date(),
+      },
+      select: {
+        id: true,
+        comment: true,
+        createdAt: true,
+        commentId: true,
+        userId: true,
+        videoId: true,
+        isEdited: true,
+        editedAt: true,
+        User: true,
+        reply: {
+          select: {
+            id: true,
+            comment: true,
+            createdAt: true,
+            commentId: true,
+            userId: true,
+            videoId: true,
+            isEdited: true,
+            User: true,
+          },
+        },
+      },
+    });
+
+    if (updatedComment) {
+      // Revalidate the path here
+      revalidatePath(`/video/${updatedComment.videoId}`);
+      return { status: 200, data: updatedComment };
+    }
+    return { status: 400 };
+  } catch (error) {
+    console.log("🔴 ERROR", error);
     return { status: 400 };
   }
 };

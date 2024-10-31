@@ -88,6 +88,7 @@ export type CommentRepliesProps = {
   commentId: string | null;
   userId: string | null;
   videoId: string | null;
+  isEdited: boolean;
   User: {
     id: string;
     email: string;
@@ -121,6 +122,7 @@ export type VideoCommentProps = {
     commentId: string | null;
     userId: string | null;
     videoId: string | null;
+    isEdited: boolean;
   }[];
 };
 
