@@ -72,7 +72,7 @@ const FormGenerator = ({
     case "input":
       return (
         <Label
-          className="flex flex-col gap-2 text-[#9D9D9D]"
+          className="flex flex-col gap-2 text-zinc-600 dark:text-zinc-400"
           htmlFor={`input-${label}`}
         >
           {label && label}
@@ -80,14 +80,16 @@ const FormGenerator = ({
             id={`input-${label}`}
             type={type}
             placeholder={placeholder}
-            className="bg-transparent border-themeGray text-themeTextGray"
+            className="bg-transparent border-zinc-200 dark:border-zinc-800 
+              text-zinc-900 dark:text-zinc-300
+              placeholder:text-zinc-500 dark:placeholder:text-zinc-500"
             {...register(name)}
           />
           <ErrorMessage
             errors={errors}
             name={name}
             render={({ message }) => (
-              <p className="text-red-400 mt-2">
+              <p className="text-red-500 dark:text-red-400 mt-2">
                 {message === "Required" ? "" : message}
               </p>
             )}
@@ -96,11 +98,17 @@ const FormGenerator = ({
       );
     case "select":
       return (
-        <Label htmlFor={`select-${label}`} className="flex flex-col gap-2">
+        <Label
+          htmlFor={`select-${label}`}
+          className="flex flex-col gap-2 text-zinc-600 dark:text-zinc-400"
+        >
           {label && label}
           <select
             id={`select-${label}`}
-            className="w-full bg-transparent border-[1px] p-3 rounded-lg"
+            className="w-full bg-transparent border border-zinc-200 dark:border-zinc-800 
+              text-zinc-900 dark:text-zinc-300 p-3 rounded-lg
+              focus:ring-2 focus:ring-zinc-200 dark:focus:ring-zinc-700
+              focus:border-transparent"
             {...register(name)}
           >
             {options?.length &&
@@ -108,7 +116,7 @@ const FormGenerator = ({
                 <option
                   value={option.value}
                   key={option.id}
-                  className="dark:bg-muted"
+                  className="bg-white dark:bg-zinc-900"
                 >
                   {option.label}
                 </option>
@@ -118,7 +126,7 @@ const FormGenerator = ({
             errors={errors}
             name={name}
             render={({ message }) => (
-              <p className="text-red-400 mt-2">
+              <p className="text-red-500 dark:text-red-400 mt-2">
                 {message === "Required" ? "" : message}
               </p>
             )}
@@ -128,10 +136,15 @@ const FormGenerator = ({
 
     case "textarea":
       return (
-        <Label className="flex flex-col gap-2" htmlFor={`input-${label}`}>
+        <Label
+          className="flex flex-col gap-2 text-zinc-600 dark:text-zinc-400"
+          htmlFor={`input-${label}`}
+        >
           {label && label}
           <Textarea
-            className="bg-transparent border-themeGray text-themeTextGray"
+            className="bg-transparent border-zinc-200 dark:border-zinc-800 
+              text-zinc-900 dark:text-zinc-300
+              placeholder:text-zinc-500 dark:placeholder:text-zinc-500"
             id={`input-${label}`}
             placeholder={placeholder}
             rows={lines}
@@ -141,7 +154,7 @@ const FormGenerator = ({
             errors={errors}
             name={name}
             render={({ message }) => (
-              <p className="text-red-400 mt-2">
+              <p className="text-red-500 dark:text-red-400 mt-2">
                 {message === "Required" ? "" : message}
               </p>
             )}
