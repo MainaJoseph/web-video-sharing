@@ -1,22 +1,22 @@
-'use client'
-import CommentForm from '@/components/forms/comment-form'
-import { Avatar, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
-import { CommentRepliesProps } from '@/types/index.type'
-import { Dot, DotIcon } from 'lucide-react'
-import React, { useState } from 'react'
+"use client";
+import CommentForm from "@/components/forms/comment-form";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { CommentRepliesProps } from "@/types/index.type";
+import { Dot, DotIcon } from "lucide-react";
+import React, { useState } from "react";
 
 type Props = {
-  comment: string
-  author: { image: string; firstname: string; lastname: string }
-  videoId: string
-  commentId?: string
-  reply: CommentRepliesProps[]
-  isReply?: boolean
-  createdAt: Date
-}
+  comment: string;
+  author: { image: string; firstname: string; lastname: string };
+  videoId: string;
+  commentId?: string;
+  reply: CommentRepliesProps[];
+  isReply?: boolean;
+  createdAt: Date;
+};
 
 const CommentCard = ({
   author,
@@ -27,46 +27,47 @@ const CommentCard = ({
   isReply,
   createdAt,
 }: Props) => {
-  const [onReply, setOnReply] = useState<boolean>(false)
+  const [onReply, setOnReply] = useState<boolean>(false);
   const daysAgo = Math.floor(
     (new Date().getTime() - createdAt.getTime()) / (24 * 60 * 60 * 1000)
-  )
+  );
 
   return (
     <Card
       className={cn(
         isReply
-          ? 'bg-[#1D1D1D] pl-10 border-none shadow-none'
-          : 'border-[1px] bg-[#1D1D1D] p-5 shadow-none',
-        'relative'
+          ? "bg-white dark:bg-zinc-900 pl-10 border-none shadow-none"
+          : "border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-none",
+        "relative"
       )}
     >
       <div className="flex gap-x-2 items-center">
         <Avatar>
-          <AvatarImage
-            src={author.image}
-            alt="author"
-          />
+          <AvatarImage src={author.image} alt="author" />
         </Avatar>
-        <p className="capitalize text-sm text-[#BDBDBD] flex">
-          {author.firstname} {author.lastname}{' '}
+        <p className="capitalize text-sm text-zinc-700 dark:text-zinc-300 flex">
+          {author.firstname} {author.lastname}{" "}
           <div className="flex items-center gap-[0]">
-            <DotIcon className="text-[#707070]" />
-            <span className="text-[#707070] text-xs ml-[-6px]">
-              {daysAgo === 0 ? 'Today' : `${daysAgo}d ago`}
+            <DotIcon className="text-zinc-500 dark:text-zinc-500" />
+            <span className="text-zinc-500 dark:text-zinc-500 text-xs ml-[-6px]">
+              {daysAgo === 0 ? "Today" : `${daysAgo}d ago`}
             </span>
           </div>
         </p>
       </div>
       <div>
-        <p className="text-[#BDBDBD]">{comment}</p>
+        <p className="text-zinc-700 dark:text-zinc-300">{comment}</p>
       </div>
       {!isReply && (
-        <div className="flex justify-end mt-3 ">
+        <div className="flex justify-end mt-3">
           {!onReply ? (
             <Button
               onClick={() => setOnReply(true)}
-              className="text-sm rounded-full bg-[#252525] text-white hover:text-black absolute z-[1] top-8"
+              className="text-sm rounded-full bg-zinc-100 dark:bg-zinc-800 
+                text-zinc-900 dark:text-zinc-100 
+                hover:bg-zinc-200 dark:hover:bg-zinc-700
+                hover:text-zinc-900 dark:hover:text-zinc-100 
+                absolute z-[1] top-8"
             >
               Reply
             </Button>
@@ -75,13 +76,13 @@ const CommentCard = ({
               close={() => setOnReply(false)}
               videoId={videoId}
               commentId={commentId}
-              author={author.firstname + ' ' + author.lastname}
+              author={author.firstname + " " + author.lastname}
             />
           )}
         </div>
       )}
       {reply.length > 0 && (
-        <div className="flex flex-col gap-y-10 mt-5  border-l-2">
+        <div className="flex flex-col gap-y-10 mt-5 border-l-2 border-zinc-200 dark:border-zinc-800">
           {reply.map((r) => (
             <CommentCard
               isReply
@@ -101,7 +102,7 @@ const CommentCard = ({
         </div>
       )}
     </Card>
-  )
-}
+  );
+};
 
-export default CommentCard
+export default CommentCard;
