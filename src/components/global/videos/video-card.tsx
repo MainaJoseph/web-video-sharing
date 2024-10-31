@@ -33,10 +33,10 @@ const VideoCard = (props: Props) => {
 
   return (
     <Loader
-      className="bg-[#171717] flex justify-center items-center border-[1px] border-[rgb(37,37,37)] rounded-xl"
+      className="bg-white dark:bg-zinc-900 flex justify-center items-center border border-zinc-200 dark:border-zinc-800 rounded-xl"
       state={props.processing}
     >
-      <div className=" group overflow-hidden cursor-pointer bg-[#171717] relative border-[1px] border-[#252525] flex flex-col rounded-xl">
+      <div className="group overflow-hidden cursor-pointer bg-white dark:bg-zinc-900 relative border border-zinc-200 dark:border-zinc-800 flex flex-col rounded-xl">
         <div className="absolute top-3 right-3 z-50 gap-x-3 hidden group-hover:flex">
           <CardMenu
             currentFolderName={props.Folder?.name}
@@ -45,13 +45,13 @@ const VideoCard = (props: Props) => {
             currentFolder={props.Folder?.id}
           />
           <CopyLink
-            className="p-[5px] h-5 bg-hover:bg-transparent bg-[#252525]"
+            className="p-[5px] h-5 hover:bg-transparent bg-zinc-100 dark:bg-zinc-800"
             videoId={props.id}
           />
         </div>
         <Link
           href={`/dashboard/${props.workspaceId}/video/${props.id}`}
-          className="hover:bg-[#252525] transition duration-150 flex flex-col justify-between h-full"
+          className="hover:bg-zinc-100 dark:hover:bg-zinc-800 transition duration-150 flex flex-col justify-between h-full"
         >
           <video
             controls={false}
@@ -63,29 +63,33 @@ const VideoCard = (props: Props) => {
             />
           </video>
           <div className="px-5 py-3 flex flex-col gap-7-2 z-20">
-            <h2 className="text-sm font-semibold text-[#BDBDBD]">
+            <h2 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
               {props.title}
             </h2>
             <div className="flex gap-x-2 items-center mt-4">
-              <Avatar className=" w-8 h-8">
+              <Avatar className="w-8 h-8">
                 <AvatarImage src={props.User?.image as string} />
-                <AvatarFallback>
-                  <User />
+                <AvatarFallback className="bg-zinc-100 dark:bg-zinc-800">
+                  <User className="text-zinc-500 dark:text-zinc-400" />
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="capitalize text-xs text-[#BDBDBD]">
+                <p className="capitalize text-xs text-zinc-700 dark:text-zinc-300">
                   {props.User?.firstname} {props.User?.lastname}
                 </p>
-                <p className="text-[#6d6b6b]  text-xs flex items-center ">
+                <p className="text-zinc-500 dark:text-zinc-500 text-xs flex items-center">
                   <Dot /> {daysAgo === 0 ? "Today" : `${daysAgo}d ago`}
                 </p>
               </div>
             </div>
             <div className="mt-4">
               <span className="flex gap-x-1 items-center">
-                <Share2 fill="#9D9D9D" className="text-[#9D9D9D]" size={12} />
-                <p className="text-xs text-[#9D9D9D] capitalize">
+                <Share2
+                  fill="rgb(161 161 170)"
+                  className="text-zinc-400 dark:text-zinc-500"
+                  size={12}
+                />
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 capitalize">
                   {props.User?.firstname}'s Workspace
                 </p>
               </span>
