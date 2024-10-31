@@ -22,7 +22,13 @@ const CardMenu = ({
       title="Move to new Workspace/Folder"
       description="This action cannot be undone. This will permanently delete your
   account and remove your data from our servers."
-      trigger={<Move size={20} fill="#4f4f4f" className="text-[#4f4f4f]" />}
+      trigger={
+        <Move
+          size={20}
+          fill="rgb(161 161 170)"
+          className="text-zinc-400 dark:text-zinc-500"
+        />
+      }
     >
       <ChangeVideoLocation
         currentFolder={currentFolder}
