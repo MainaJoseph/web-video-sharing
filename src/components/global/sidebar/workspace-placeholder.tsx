@@ -5,12 +5,10 @@ type Props = { children: React.ReactNode };
 const WorkspacePlaceholder = ({ children }: Props) => {
   return (
     <span
-      className="bg-zinc-200 dark:bg-zinc-700 
-      flex items-center justify-center 
+      className="bg-zinc-300 dark:bg-zinc-600 
+      flex items-center font-bold justify-center 
       w-8 px-2 h-7 rounded-sm 
-      font-bold text-zinc-700 dark:text-zinc-300
-      transition-colors duration-200
-      group-hover:bg-zinc-300 dark:group-hover:bg-zinc-600"
+      text-zinc-700 dark:text-zinc-900"
     >
       {children}
     </span>

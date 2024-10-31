@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import { getWorkSpaces } from "@/actions/workspace";
 import {
   Select,
@@ -12,9 +10,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+
 import { NotificationProps, WorkspaceProps } from "@/types/index.type";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
+import React from "react";
 import Modal from "../modal";
 import { Menu, PlusCircle } from "lucide-react";
 import Search from "../search";
@@ -23,14 +23,14 @@ import SidebarItem from "./sidebar-item";
 import { getNotifications } from "@/actions/user";
 import { useQueryData } from "@/hooks/useQueryData";
 import WorkspacePlaceholder from "./workspace-placeholder";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useDispatch } from "react-redux";
 import GlobalCard from "../global-card";
-import PaymentButton from "../payment-button";
+import { Button } from "@/components/ui/button";
+import Loader from "../loader";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import InfoBar from "../info-bar";
+import { useDispatch } from "react-redux";
 import { WORKSPACES } from "@/redux/slices/workspaces";
-
+import PaymentButton from "../payment-button";
 type Props = {
   activeWorkspaceId: string;
 };
@@ -54,7 +54,6 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
   const onChangeActiveWorkspace = (value: string) => {
     router.push(`/dashboard/${value}`);
   };
-
   const currentWorkspace = workspace.workspace.find(
     (s) => s.id === activeWorkspaceId
   );
@@ -73,31 +72,21 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
         absolute top-0 left-0 right-0 border-b border-zinc-200 dark:border-zinc-800"
       >
         <Image src="/nova-logo.svg" height={40} width={40} alt="logo" />
-        <p className="text-2xl text-zinc-900 dark:text-white">Nova</p>
+        <p className="text-2xl">Nova</p>
       </div>
-
       <Select
         defaultValue={activeWorkspaceId}
         onValueChange={onChangeActiveWorkspace}
       >
-        <SelectTrigger
-          className="mt-16 text-zinc-600 dark:text-zinc-400 bg-transparent 
-          border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-900"
-        >
-          <SelectValue placeholder="Select a workspace" />
+        <SelectTrigger className="mt-16 text-neutral-400 bg-transparent">
+          <SelectValue placeholder="Select a workspace"></SelectValue>
         </SelectTrigger>
         <SelectContent className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800">
           <SelectGroup>
-            <SelectLabel className="text-zinc-900 dark:text-zinc-100">
-              Workspaces
-            </SelectLabel>
-            <Separator className="bg-zinc-200 dark:bg-zinc-800" />
+            <SelectLabel>Workspaces</SelectLabel>
+            <Separator />
             {workspace.workspace.map((workspace) => (
-              <SelectItem
-                value={workspace.id}
-                key={workspace.id}
-                className="text-zinc-700 dark:text-zinc-300 focus:bg-zinc-100 dark:focus:bg-zinc-900"
-              >
+              <SelectItem value={workspace.id} key={workspace.id}>
                 {workspace.name}
               </SelectItem>
             ))}
@@ -108,7 +97,6 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
                     <SelectItem
                       value={workspace.WorkSpace.id}
                       key={workspace.WorkSpace.id}
-                      className="text-zinc-700 dark:text-zinc-300 focus:bg-zinc-100 dark:focus:bg-zinc-900"
                     >
                       {workspace.WorkSpace.name}
                     </SelectItem>
@@ -117,10 +105,31 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
           </SelectGroup>
         </SelectContent>
       </Select>
-
-      <p className="w-full text-zinc-500 dark:text-zinc-400 font-bold mt-4">
-        Menu
-      </p>
+      {currentWorkspace?.type === "PUBLIC" &&
+        workspace.subscription?.plan == "PRO" && (
+          <Modal
+            trigger={
+              <span
+                className="text-sm cursor-pointer flex items-center justify-center 
+  bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800/90 dark:hover:bg-zinc-800/60 
+  w-full rounded-sm p-[5px] gap-2"
+              >
+                <PlusCircle
+                  size={15}
+                  className="text-zinc-600 dark:text-zinc-400 fill-zinc-400 dark:fill-zinc-500"
+                />
+                <span className="text-zinc-600 dark:text-zinc-400 font-semibold text-xs">
+                  Invite To Workspace
+                </span>
+              </span>
+            }
+            title="Invite To Workspace"
+            description="Invite other users to your workspace"
+          >
+            <Search workspaceId={activeWorkspaceId} />
+          </Modal>
+        )}
+      <p className="w-full text-[#9D9D9D] font-bold mt-4">Menu</p>
       <nav className="w-full">
         <ul>
           {menuItems.map((item) => (
@@ -131,16 +140,15 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
               title={item.title}
               key={item.title}
               notifications={
-                item.title === "Notifications" &&
-                count?._count?.notification > 0
-                  ? count._count.notification
-                  : undefined
+                (item.title === "Notifications" &&
+                  count._count &&
+                  count._count.notification) ||
+                0
               }
             />
           ))}
         </ul>
       </nav>
-
       <Separator className="w-4/5 bg-zinc-200 dark:bg-zinc-800" />
 
       <p className="w-full text-zinc-500 dark:text-zinc-400 font-bold mt-4">
