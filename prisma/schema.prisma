@@ -46,6 +46,8 @@ model Comment {
   Video     Video?    @relation(fields: [videoId], references: [id], onDelete: Cascade)
   videoId   String?   @db.Uuid
   createdAt DateTime  @default(now())
+  isEdited   Boolean   @default(false)
+  editedAt   DateTime?
 }
 
 model Subscription {
