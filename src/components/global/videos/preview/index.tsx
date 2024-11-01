@@ -1,5 +1,5 @@
 "use client";
-import { getPreviewVideo } from "@/actions/workspace";
+import { getPreviewVideo, sendEmailForFirstView } from "@/actions/workspace";
 import { useQueryData } from "@/hooks/useQueryData";
 import { VideoProps } from "@/types/index.type";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ const VideoPreview = ({ videoId }: Props) => {
     getPreviewVideo(videoId)
   );
 
-  // const notifyFirstView = async () => await sendEmailForFirstView(videoId);
+  const notifyFirstView = async () => await sendEmailForFirstView(videoId);
 
   const { data: video, status, author } = data as VideoProps;
   if (status !== 200) router.push("/");
@@ -35,14 +35,14 @@ const VideoPreview = ({ videoId }: Props) => {
     (new Date().getTime() - video.createdAt.getTime()) / (24 * 60 * 60 * 1000)
   );
 
-  // useEffect(() => {
-  //   if (video.views === 0) {
-  //     notifyFirstView();
-  //   }
-  //   return () => {
-  //     notifyFirstView();
-  //   };
-  // }, []);
+  useEffect(() => {
+    if (video.views === 0) {
+      notifyFirstView();
+    }
+    return () => {
+      notifyFirstView();
+    };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 lg:py-10 overflow-y-auto gap-5">
