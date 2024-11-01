@@ -3,10 +3,48 @@
 import { client } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
+import nodemailer from "nodemailer";
 
 export async function revalidateVideoPage(videoId: string) {
   revalidatePath(`/video/${videoId}`);
 }
+
+/**
+ * Creates a transporter and mail options for sending an email using Nodemailer.
+ *
+ * This function sets up an SMTP transporter with Gmail's SMTP server and prepares the email details.
+ * It does not send the email itself but returns the transporter and mail options for further use.
+ *
+ * @param to - The recipient's email address.
+ * @param subject - The subject line of the email.
+ * @param text - The plain text version of the email content.
+ * @param html - Optional HTML version of the email content.
+ * @returns An object containing the Nodemailer transporter and mail options.
+ */
+export const sendEmail = async (
+  to: string,
+  subject: string,
+  text: string,
+  html?: string
+) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.MAILER_EMAIL,
+      pass: process.env.MAILER_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    to,
+    subject,
+    text,
+    html,
+  };
+  return { transporter, mailOptions };
+};
 
 // Authenticate User with clerk
 export const onAuthenticateUser = async () => {
@@ -552,5 +590,160 @@ export const editComment = async (commentId: string, newComment: string) => {
   } catch (error) {
     console.log("🔴 ERROR", error);
     return { status: 400 };
+  }
+};
+
+/**
+ * Invites a user to join a workspace by sending an email invitation and creating a database record.
+ *
+ * This function performs the following steps:
+ * - Verifies the current user's authentication.
+ * - Retrieves the sender's information from the database.
+ * - Fetches the workspace details using the provided workspace ID.
+ * - Creates an invitation record in the database linking the sender, receiver, and workspace.
+ * - Updates the sender's notifications with the invitation action.
+ * - Sends an email to the receiver with a link to accept the invitation.
+ * - Returns a status object indicating the success or failure of the operation.
+ *
+ * @param workspaceId - The ID of the workspace to which the user is being invited.
+ * @param recieverId - The ID of the user who is being invited.
+ * @param email - The email address of the receiver to send the invitation to.
+ * @returns An object containing a status code and a data message.
+ */
+export const inviteMembers = async (
+  workspaceId: string,
+  recieverId: string,
+  email: string
+) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+    const senderInfo = await client.user.findUnique({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        id: true,
+        firstname: true,
+        lastname: true,
+      },
+    });
+    if (senderInfo?.id) {
+      const workspace = await client.workSpace.findUnique({
+        where: {
+          id: workspaceId,
+        },
+        select: {
+          name: true,
+        },
+      });
+      if (workspace) {
+        const invitation = await client.invite.create({
+          data: {
+            senderId: senderInfo.id,
+            recieverId,
+            workSpaceId: workspaceId,
+            content: `You are invited to join ${workspace.name} Workspace, click accept to confirm`,
+          },
+          select: {
+            id: true,
+          },
+        });
+
+        await client.user.update({
+          where: {
+            clerkid: user.id,
+          },
+          data: {
+            notification: {
+              create: {
+                content: `${user.firstName} ${user.lastName} invited ${senderInfo.firstname} into ${workspace.name}`,
+              },
+            },
+          },
+        });
+        if (invitation) {
+          const { transporter, mailOptions } = await sendEmail(
+            email,
+            "Join Us at " + workspace.name,
+            `You've been invited to collaborate on ${workspace.name}`,
+            `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      </head>
+      <body style="margin: 0; padding: 0; background-color: #f6f9fc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+        <table role="presentation" style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td align="center" style="padding: 40px 0;">
+              <table role="presentation" style="width: 600px; border-collapse: collapse; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);">
+                <!-- Header -->
+                <tr>
+                  <td style="padding: 40px 48px; text-align: center;">
+                    <h1 style="margin: 0; font-size: 24px; color: #1a1a1a;">You're Invited! 🎉</h1>
+                  </td>
+                </tr>
+                
+                <!-- Content -->
+                <tr>
+                  <td style="padding: 0 48px 40px;">
+                    <p style="margin: 0 0 24px; font-size: 16px; line-height: 24px; color: #4a5568;">
+                      You've been invited to join the <strong style="color: #2d3748;">${workspace.name}</strong> workspace. Join your teammates and start collaborating!
+                    </p>
+                    
+                    <!-- CTA Button -->
+                    <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                      <tr>
+                        <td align="center" style="padding: 24px 0;">
+                          <a href="${process.env.NEXT_PUBLIC_HOST_URL}/invite/${invitation.id}"
+                             style="display: inline-block; padding: 14px 32px; background-color: #000000; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 16px; border-radius: 8px; transition: background-color 0.2s;">
+                            Accept Invitation
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                    
+                    <p style="margin: 24px 0 0; font-size: 14px; line-height: 20px; color: #718096; text-align: center;">
+                      If you didn't expect this invitation, you can safely ignore this email.
+                    </p>
+                  </td>
+                </tr>
+                
+                <!-- Footer -->
+                <tr>
+                  <td style="padding: 24px 48px; background-color: #f8fafc; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+                    <p style="margin: 0; font-size: 12px; line-height: 18px; color: #8795a1; text-align: center;">
+                      This invitation was sent from ${workspace.name}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `
+          );
+
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log("🔴", error.message);
+            } else {
+              console.log("✅ Email send");
+            }
+          });
+          return { status: 200, data: "Invite sent" };
+        }
+        return { status: 400, data: "invitation failed" };
+      }
+      return { status: 404, data: "workspace not found" };
+    }
+    return { status: 404, data: "recipient not found" };
+  } catch (error) {
+    console.log(error);
+    return { status: 400, data: "Oops! something went wrong" };
   }
 };
