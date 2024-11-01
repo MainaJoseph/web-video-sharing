@@ -10,6 +10,65 @@ import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_CLIENT_SECRET as string);
 
+export const syncStripePaymentHistory = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+
+    // Get user's database record to find Stripe customer ID
+    const dbUser = await client.user.findUnique({
+      where: { clerkid: user.id },
+      select: {
+        id: true,
+        subscription: {
+          select: { customerId: true },
+        },
+      },
+    });
+
+    if (!dbUser?.subscription?.customerId) {
+      return { status: 404, message: "No customer ID found" };
+    }
+
+    // Fetch charges from Stripe
+    const charges = await stripe.charges.list({
+      customer: dbUser.subscription.customerId,
+      limit: 100, // Adjust based on your needs
+    });
+
+    // Transform and store payments in database
+    const paymentPromises = charges.data.map((charge) =>
+      client.paymentHistory.upsert({
+        where: {
+          id: charge.id, // You'll need to add this field to your schema
+        },
+        create: {
+          id: charge.id,
+          amount: charge.amount / 100, // Convert from cents to dollars
+          status: charge.status,
+          description: charge.description || "Subscription payment",
+          createdAt: new Date(charge.created * 1000),
+          userId: dbUser.id,
+        },
+        update: {
+          amount: charge.amount / 100,
+          status: charge.status,
+          description: charge.description || "Subscription payment",
+        },
+      })
+    );
+
+    await Promise.all(paymentPromises);
+
+    return { status: 200, message: "Payment history synced successfully" };
+  } catch (error) {
+    console.error("Error syncing payment history:", error);
+    return { status: 500, message: "Failed to sync payment history" };
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //Verify if user has access to workspace
 export const verifyAccessToWorkspace = async (workspaceId: string) => {
   try {

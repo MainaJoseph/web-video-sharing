@@ -142,9 +142,9 @@ model Invite {
 
 
 model PaymentHistory {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String    @id // Changed to use Stripe's payment ID i
   amount        Float
-  status        String    @default("successful")
+  status        String    @default("succeeded")
   description   String
   createdAt     DateTime  @default(now())
   User          User?     @relation(fields: [userId], references: [id], onDelete: Cascade)

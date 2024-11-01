@@ -1,27 +1,20 @@
-import { completeSubscription } from "@/actions/workspace";
-import { redirect } from "next/navigation";
+// PaymentPage.tsx (Server Component)
 import React from "react";
+import { use } from "react";
+import PaymentStatusClient from "./PaymentStatusClient";
 
-type Props = {
-  searchParams: { session_id?: string; cancel?: boolean };
-};
+export default function PaymentPage({
+  searchParams,
+}: {
+  searchParams: { session_id?: string; cancel?: string };
+}) {
+  // Unwrap searchParams with React.use()
+  const params = use(Promise.resolve(searchParams));
 
-const page = async ({ searchParams: { cancel, session_id } }: Props) => {
-  if (session_id) {
-    const customer = await completeSubscription(session_id);
-    if (customer.status === 200) {
-      return redirect("/auth/callback");
-    }
-  }
-
-  if (cancel) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen w-full">
-        <h4 className="text-5xl font-bold">404</h4>
-        <p className="text-xl text-center">Oops! Something went wrong</p>
-      </div>
-    );
-  }
-};
-
-export default page;
+  return (
+    <PaymentStatusClient
+      cancel={params.cancel === "true"}
+      sessionId={params.session_id}
+    />
+  );
+}
