@@ -25,7 +25,6 @@ import { useQueryData } from "@/hooks/useQueryData";
 import WorkspacePlaceholder from "./workspace-placeholder";
 import GlobalCard from "../global-card";
 import { Button } from "@/components/ui/button";
-import Loader from "../loader";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import InfoBar from "../info-bar";
 import { useDispatch } from "react-redux";
@@ -61,6 +60,75 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
   if (isFetched && workspace) {
     dispatch(WORKSPACES({ workspaces: workspace.workspace }));
   }
+
+  const WorkspacesSection = () => {
+    if (workspace.subscription?.plan === "FREE") {
+      return (
+        <>
+          <p className="w-full text-zinc-500 dark:text-zinc-400 font-bold mt-4">
+            Workspaces
+          </p>
+          <GlobalCard
+            title="Upgrade to Pro"
+            description="Unlock AI features like transcription, AI summary, and more."
+            footer={<PaymentButton />}
+          />
+        </>
+      );
+    }
+
+    return (
+      <>
+        <p className="w-full text-zinc-500 dark:text-zinc-400 font-bold mt-4">
+          Workspaces
+        </p>
+        {workspace.workspace.length === 1 && workspace.members.length === 0 && (
+          <div className="w-full mt-[-10px]">
+            <p className="text-zinc-400 dark:text-zinc-600 font-medium text-sm">
+              No Workspaces
+            </p>
+          </div>
+        )}
+        <nav className="w-full">
+          <ul className="h-[150px] overflow-auto overflow-x-hidden fade-layer">
+            {workspace.workspace.length > 0 &&
+              workspace.workspace.map(
+                (item) =>
+                  item.type !== "PERSONAL" && (
+                    <SidebarItem
+                      href={`/dashboard/${item.id}`}
+                      selected={pathName === `/dashboard/${item.id}`}
+                      title={item.name}
+                      notifications={undefined}
+                      key={item.name}
+                      icon={
+                        <WorkspacePlaceholder>
+                          {item.name.charAt(0)}
+                        </WorkspacePlaceholder>
+                      }
+                    />
+                  )
+              )}
+            {workspace.members.length > 0 &&
+              workspace.members.map((item) => (
+                <SidebarItem
+                  href={`/dashboard/${item.WorkSpace.id}`}
+                  selected={pathName === `/dashboard/${item.WorkSpace.id}`}
+                  title={item.WorkSpace.name}
+                  notifications={undefined}
+                  key={item.WorkSpace.name}
+                  icon={
+                    <WorkspacePlaceholder>
+                      {item.WorkSpace.name.charAt(0)}
+                    </WorkspacePlaceholder>
+                  }
+                />
+              ))}
+          </ul>
+        </nav>
+      </>
+    );
+  };
 
   const SidebarSection = (
     <div
@@ -106,7 +174,7 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
         </SelectContent>
       </Select>
       {currentWorkspace?.type === "PUBLIC" &&
-        workspace.subscription?.plan == "PRO" && (
+        workspace.subscription?.plan === "PRO" && (
           <Modal
             trigger={
               <span
@@ -151,67 +219,9 @@ const Sidebar = ({ activeWorkspaceId }: Props) => {
       </nav>
       <Separator className="w-4/5 bg-zinc-200 dark:bg-zinc-800" />
 
-      <p className="w-full text-zinc-500 dark:text-zinc-400 font-bold mt-4">
-        Workspaces
-      </p>
-
-      {workspace.workspace.length === 1 && workspace.members.length === 0 && (
-        <div className="w-full mt-[-10px]">
-          <p className="text-zinc-400 dark:text-zinc-600 font-medium text-sm">
-            {workspace.subscription?.plan === "FREE"
-              ? "Upgrade to create workspaces"
-              : "No Workspaces"}
-          </p>
-        </div>
-      )}
-
-      <nav className="w-full">
-        <ul className="h-[150px] overflow-auto overflow-x-hidden fade-layer">
-          {workspace.workspace.length > 0 &&
-            workspace.workspace.map(
-              (item) =>
-                item.type !== "PERSONAL" && (
-                  <SidebarItem
-                    href={`/dashboard/${item.id}`}
-                    selected={pathName === `/dashboard/${item.id}`}
-                    title={item.name}
-                    notifications={undefined}
-                    key={item.name}
-                    icon={
-                      <WorkspacePlaceholder>
-                        {item.name.charAt(0)}
-                      </WorkspacePlaceholder>
-                    }
-                  />
-                )
-            )}
-          {workspace.members.length > 0 &&
-            workspace.members.map((item) => (
-              <SidebarItem
-                href={`/dashboard/${item.WorkSpace.id}`}
-                selected={pathName === `/dashboard/${item.WorkSpace.id}`}
-                title={item.WorkSpace.name}
-                notifications={undefined}
-                key={item.WorkSpace.name}
-                icon={
-                  <WorkspacePlaceholder>
-                    {item.WorkSpace.name.charAt(0)}
-                  </WorkspacePlaceholder>
-                }
-              />
-            ))}
-        </ul>
-      </nav>
+      <WorkspacesSection />
 
       <Separator className="w-4/5 bg-zinc-200 dark:bg-zinc-800" />
-
-      {workspace.subscription?.plan === "FREE" && (
-        <GlobalCard
-          title="Upgrade to Pro"
-          description="Unlock AI features like transcription, AI summary, and more."
-          footer={<PaymentButton />}
-        />
-      )}
     </div>
   );
 
