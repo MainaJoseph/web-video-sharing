@@ -6,6 +6,9 @@ import { sendEmail } from "./user";
 import { createClient, OAuthStrategy } from "@wix/sdk";
 import { items } from "@wix/data";
 import axios from "axios";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_CLIENT_SECRET as string);
 
 //Verify if user has access to workspace
 export const verifyAccessToWorkspace = async (workspaceId: string) => {
@@ -624,5 +627,41 @@ export const sendEmailForFirstView = async (videoId: string) => {
     }
   } catch (error) {
     console.log(error);
+  }
+};
+
+// Completes a user's subscription by updating their plan and customer ID in the database.
+// This function retrieves the current user and Stripe session details, verifies the session,
+// and updates the user's subscription details if everything is valid.
+// If any part of the process fails, it returns an appropriate error status.
+export const completeSubscription = async (session_id: string) => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404 };
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    if (session) {
+      const customer = await client.user.update({
+        where: {
+          clerkid: user.id,
+        },
+        data: {
+          subscription: {
+            update: {
+              data: {
+                customerId: session.customer as string,
+                plan: "PRO",
+              },
+            },
+          },
+        },
+      });
+      if (customer) {
+        return { status: 200 };
+      }
+    }
+    return { status: 404 };
+  } catch (error) {
+    return { status: 400 };
   }
 };
