@@ -747,3 +747,82 @@ export const inviteMembers = async (
     return { status: 400, data: "Oops! something went wrong" };
   }
 };
+
+export const acceptInvite = async (inviteId: string) => {
+  try {
+    const user = await currentUser();
+    if (!user)
+      return {
+        status: 404,
+      };
+
+    // Find the invitation and check its status
+    const invitation = await client.invite.findUnique({
+      where: {
+        id: inviteId,
+      },
+      select: {
+        workSpaceId: true,
+        accepted: true,
+        reciever: {
+          select: {
+            clerkid: true,
+          },
+        },
+      },
+    });
+
+    // Check if invitation exists
+    if (!invitation) return { status: 404, message: "Invitation not found" };
+
+    // Check if user is the intended recipient
+    if (user.id !== invitation.reciever?.clerkid) return { status: 401 };
+
+    // Check if invitation is already accepted
+    if (invitation.accepted) {
+      return {
+        status: 400,
+        message: "This invitation has already been accepted",
+      };
+    }
+
+    // Proceed with accepting the invitation
+    const acceptInvite = client.invite.update({
+      where: {
+        id: inviteId,
+      },
+      data: {
+        accepted: true,
+      },
+    });
+
+    const updateMember = client.user.update({
+      where: {
+        clerkid: user.id,
+      },
+      data: {
+        members: {
+          create: {
+            workSpaceId: invitation.workSpaceId,
+          },
+        },
+      },
+    });
+
+    const membersTransaction = await client.$transaction([
+      acceptInvite,
+      updateMember,
+    ]);
+
+    if (membersTransaction) {
+      return { status: 200 };
+    }
+    return { status: 400, message: "Failed to process invitation" };
+  } catch (error) {
+    console.error("Error accepting invitation:", error);
+    return {
+      status: 400,
+      message: "An error occurred while processing the invitation",
+    };
+  }
+};
